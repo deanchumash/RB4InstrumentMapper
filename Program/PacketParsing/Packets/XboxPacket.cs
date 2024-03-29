@@ -28,7 +28,7 @@ namespace RB4InstrumentMapper.Parsing
             // For easier manual packet log construction, these are optional
             int lastBracket = input.LastIndexOf(']');
             if (lastBracket >= 0)
-                input = input.Slice(lastBracket).TrimStart();
+                input = input.Slice(++lastBracket).TrimStart();
 
             // Parse direction
             // For easier manual packet log construction, this defaults to in

@@ -64,6 +64,13 @@ namespace RB4InstrumentMapper.Parsing
                     continue;
                 }
 
+                // Skip packets that were sent from us
+                if (!packet.DirectionIn)
+                {
+                    Console.WriteLine($"Skipping direction-out line: {line}");
+                    continue;
+                }
+
                 Console.WriteLine($"Processing line: {line}");
                 try
                 {
