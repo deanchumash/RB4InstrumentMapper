@@ -140,7 +140,12 @@ You will need to install the WinUSB driver onto the Rock Band 4 wireless legacy 
 
    ![WinUSB configuration, right side](Docs/Images/Readme/usb-configure-right.png)
 
-If you run into any issues with this process, you may try [installing the driver manually](Docs/WinUSB/manual-winusb-install.md). This also covers [uninstalling manually](Docs/WinUSB/manual-winusb-install.md#remove-winusb), in case a device gets stuck with the driver installed and RB4InstrumentMapper stops picking it up.
+   - Note that games that natively support the device will no longer work directly with it until you uninstall the WinUSB driver, you will have to use RB4InstrumentMapper.
+   - If you want to remove this limitation, you can hit the `Revert Driver` button on the device, after which those games will work with it again.
+   - After you do this, RB4InstrumentMapper will no longer be able to make it usable in other games until you switch the driver back over.
+
+If you run into any issues with this process, you may try [installing the driver manually](Docs/WinUSB/manual-winusb-install.md). This is not recommended for normal use, it should only be used if the Configure Devices menu is not working.
+- This also covers [uninstalling manually](Docs/WinUSB/manual-winusb-install.md#remove-winusb), in case a device gets stuck with the driver installed and RB4InstrumentMapper stops picking it up.
 
 ### Usage
 
@@ -148,7 +153,7 @@ If you run into any issues with this process, you may try [installing the driver
 
    ![USB enable checkbox](Docs/Images/Readme/usb-checkbox.png)
 
-2. **Ensure you have installed WinUSB on the devices you want to use! They will not be recognized otherwise!**
+2. **Ensure you have [installed WinUSB](#setup-1) on the devices you want to use! They will not be recognized otherwise!**
 3. In the `Controller Type` dropdown, select the controller emulation mode you want to use.
 
    ![Controller emulation mode selection](Docs/Images/Readme/controller-emulation-mode.png)
