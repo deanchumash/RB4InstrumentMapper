@@ -315,12 +315,15 @@ namespace RB4InstrumentMapper
             pcapDeviceCombo.IsEnabled = false;
             pcapAutoDetectButton.IsEnabled = false;
             pcapRefreshButton.IsEnabled = false;
+
             usbEnabledCheckBox.IsEnabled = false;
+            usbConfigureDevicesButton.IsEnabled = false;
+
+            controllerDeviceTypeCombo.IsEnabled = false;
+
             packetDebugCheckBox.IsEnabled = false;
             packetLogCheckBox.IsEnabled = false;
             verboseErrorCheckBox.IsEnabled = false;
-
-            controllerDeviceTypeCombo.IsEnabled = false;
 
             startStatusLabel.Content = "Running...";
             startButton.Content = "Stop";
