@@ -35,13 +35,14 @@
         </GroupBox>
         <GroupBox Header="Capture" Height="104" Margin="0,165,0,0" VerticalAlignment="Top">
             <Grid Margin="10,10,10,10">
-                <Label x:Name="controllerDeviceTypeLabel" Content="Controller Emulation Type" Height="30" Width="160" Margin="-5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Label x:Name="controllerDeviceTypeLabel" Content="Controller Emulation Mode" Height="30" Width="160" Margin="-5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <ComboBox x:Name="controllerDeviceTypeCombo" Height="30" Width="160" VerticalAlignment="Bottom" HorizontalAlignment="Left" SelectionChanged="controllerDeviceTypeCombo_SelectionChanged">
                     <ComboBoxItem x:Name="vjoyDeviceTypeOption" Content="vJoy" IsEnabled="False"/>
                     <ComboBoxItem x:Name="vigemDeviceTypeOption" Content="ViGEmBus" IsEnabled="False"/>
                     <ComboBoxItem x:Name="rpcs3DeviceTypeOption" Content="ViGEmBus (RPCS3 compatibility)" IsEnabled="False"/>
                 </ComboBox>
-                <Button x:Name="startButton" Content="Start" FontSize="18" Width="250" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsEnabled="False" Click="startButton_Click"/>
+                <Label x:Name="startStatusLabel" Content="Ready to run!" Height="30" Width="250" Margin="0,-10,0,0" VerticalAlignment="Top" HorizontalAlignment="Right" HorizontalContentAlignment="Right"/>
+                <Button x:Name="startButton" Content="Start" FontSize="18" Width="150" Margin="0,25,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsEnabled="False" Click="startButton_Click"/>
                 <CheckBox x:Name="packetDebugCheckBox" Content="Show packets (for debugging)" Height="22" Width="180" Margin="175,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="packetDebugCheckBox_CheckedChanged" Unchecked="packetDebugCheckBox_CheckedChanged"/>
                 <CheckBox x:Name="packetLogCheckBox" Content="Log packets to file" Height="22" Width="120" Margin="175,23,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="packetLogCheckBox_CheckedChanged" Unchecked="packetLogCheckBox_CheckedChanged"/>
                 <CheckBox x:Name="verboseErrorCheckBox" Content="Show verbose (unimportant) errors" Width="210" Margin="175,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="verboseErrorCheckBox_CheckedChanged" Unchecked="verboseErrorCheckBox_CheckedChanged"/>

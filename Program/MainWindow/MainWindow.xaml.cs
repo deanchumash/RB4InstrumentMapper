@@ -261,10 +261,10 @@ namespace RB4InstrumentMapper
 
             // If Pcap is enabled, a capture device must be selected
             // If USB is also enabled, this condition is ignored
-            bool pcapBold = Settings.Default.pcapEnabled && pcapDeviceCombo.SelectedIndex == -1;
-            pcapBold &= !Settings.Default.usbEnabled;
-            pcapDeviceLabel.FontWeight = pcapBold && pcapDeviceLabel.IsEnabled ? FontWeights.Bold : FontWeights.Normal;
-            startEnabled &= !pcapBold;
+            bool pcapDeviceRequired = Settings.Default.pcapEnabled && !Settings.Default.usbEnabled
+                && pcapDeviceCombo.SelectedIndex == -1;
+            pcapDeviceLabel.FontWeight = pcapDeviceRequired && pcapDeviceLabel.IsEnabled ? FontWeights.Bold : FontWeights.Normal;
+            startEnabled &= !pcapDeviceRequired;
 
             // Emulation type must be selected
             bool emulationTypeSelected = BackendSettings.MapperMode != MappingMode.NotSet;
@@ -274,6 +274,16 @@ namespace RB4InstrumentMapper
 
             // Enable start button if all the conditions above pass
             startButton.IsEnabled = startEnabled;
+
+            // Display a message explaining the current start button state
+            if (startEnabled)
+                startStatusLabel.Content = "Ready to run!";
+            else if (!backendEnabled)
+                startStatusLabel.Content = "Please enable Pcap or USB.";
+            else if (pcapDeviceRequired)
+                startStatusLabel.Content = "Please select a Pcap device.";
+            else if (!emulationTypeSelected)
+                startStatusLabel.Content = "Please select a controller emulation mode.";
         }
 
         private void WinUsbDeviceAddedOrRemoved()
@@ -312,6 +322,7 @@ namespace RB4InstrumentMapper
 
             controllerDeviceTypeCombo.IsEnabled = false;
 
+            startStatusLabel.Content = "Running...";
             startButton.Content = "Stop";
 
             // Initialize packet log
