@@ -73,7 +73,7 @@ namespace RB4InstrumentMapper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool pcapEnabled {
             get {
                 return ((bool)(this["pcapEnabled"]));
@@ -85,7 +85,7 @@ namespace RB4InstrumentMapper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool usbEnabled {
             get {
                 return ((bool)(this["usbEnabled"]));
