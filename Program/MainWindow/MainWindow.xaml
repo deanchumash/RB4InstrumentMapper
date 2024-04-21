@@ -29,7 +29,7 @@
         <GroupBox Header="USB" Height="110" Margin="500,50,0,0" VerticalAlignment="Top">
             <Grid Margin="10,10,10,10">
                 <Label x:Name="usbDeviceCountLabel" Content="Count: 10" Margin="0,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
-                <Button x:Name="usbConfigureDevicesButton" Content="Configure Devices" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Click="usbConfigureDevicesButton_Click"/>
+                <Button x:Name="usbConfigureDevicesButton" Content="Configure USB Devices" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Click="usbConfigureDevicesButton_Click"/>
                 <CheckBox x:Name="usbEnabledCheckBox" Content="Enabled" Height="22" Margin="0,6,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="usbEnabledCheckBox_CheckedChanged" Unchecked="usbEnabledCheckBox_CheckedChanged"/>
             </Grid>
         </GroupBox>
