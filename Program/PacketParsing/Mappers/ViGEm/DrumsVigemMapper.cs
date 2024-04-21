@@ -51,54 +51,15 @@ namespace RB4InstrumentMapper.Parsing
             device.SetButtonState(Xbox360Button.Back, (buttons & XboxGamepadButton.Options) != 0);
 
             // Dpad
-            MapDpad(device, report, ref previousDpadCymbals, ref dpadMask);
+            // MapDpad(device, report, ref previousDpadCymbals, ref dpadMask);
+            device.SetButtonState(Xbox360Button.Up, (buttons & XboxGamepadButton.DpadUp) != 0);
+            device.SetButtonState(Xbox360Button.Down, (buttons & XboxGamepadButton.DpadDown) != 0);
+            device.SetButtonState(Xbox360Button.Left, (buttons & XboxGamepadButton.DpadLeft) != 0);
+            device.SetButtonState(Xbox360Button.Right, (buttons & XboxGamepadButton.DpadRight) != 0);
 
             // Pads and cymbals
-            byte redPad    = report.RedPad;
-            byte yellowPad = report.YellowPad;
-            byte bluePad   = report.BluePad;
-            byte greenPad  = report.GreenPad;
-
-            byte yellowCym = report.YellowCymbal;
-            byte blueCym   = report.BlueCymbal;
-            byte greenCym  = report.GreenCymbal;
-
-            // Color flags
-            device.SetButtonState(Xbox360Button.B, (redPad != 0) || ((buttons & XboxGamepadButton.B) != 0));
-            device.SetButtonState(Xbox360Button.Y, ((yellowPad | yellowCym) != 0) || ((buttons & XboxGamepadButton.Y) != 0));
-            device.SetButtonState(Xbox360Button.X, ((bluePad | blueCym) != 0) || ((buttons & XboxGamepadButton.X) != 0));
-            device.SetButtonState(Xbox360Button.A, ((greenPad | greenCym) != 0) || ((buttons & XboxGamepadButton.A) != 0));
-
-            // Pad flag
-            device.SetButtonState(Xbox360Button.RightThumb,
-                (redPad | yellowPad | bluePad | greenPad) != 0);
-            // Cymbal flag
-            device.SetButtonState(Xbox360Button.RightShoulder,
-                (yellowCym | blueCym | greenCym) != 0);
-
-            // Pedals
-            device.SetButtonState(Xbox360Button.LeftShoulder,
-                (report.Buttons & (ushort)XboxDrumButton.KickOne) != 0);
-            device.SetButtonState(Xbox360Button.LeftThumb,
-                (report.Buttons & (ushort)XboxDrumButton.KickTwo) != 0);
-
-            // Velocities
-            device.SetAxisValue(
-                Xbox360Axis.LeftThumbX,
-                ByteToVelocity(redPad)
-            );
-            device.SetAxisValue(
-                Xbox360Axis.LeftThumbY,
-                ByteToVelocityNegative((byte)(yellowPad | yellowCym))
-            );
-            device.SetAxisValue(
-                Xbox360Axis.RightThumbX,
-                ByteToVelocity((byte)(bluePad | blueCym))
-            );
-            device.SetAxisValue(
-                Xbox360Axis.RightThumbY,
-                ByteToVelocityNegative((byte)(greenPad | greenCym))
-            );
+            // MapDrums_HardwareAccurate(device, report);
+            MapDrums_Individual(device, report);
         }
 
         internal static void MapDpad(IXbox360Controller device, in XboxDrumInput report, ref int previousDpadCymbals, ref int dpadMask)
@@ -145,6 +106,92 @@ namespace RB4InstrumentMapper.Parsing
             device.SetButtonState(Xbox360Button.Down, ((dpadMask & blueBit) != 0) || ((buttons & XboxGamepadButton.DpadDown) != 0));
             device.SetButtonState(Xbox360Button.Left, (buttons & XboxGamepadButton.DpadLeft) != 0);
             device.SetButtonState(Xbox360Button.Right, (buttons & XboxGamepadButton.DpadRight) != 0);
+        }
+
+        // Maps using the exact inputs an Xbox 360 RB drumkit sends
+        internal static void MapDrums_HardwareAccurate(IXbox360Controller device, in XboxDrumInput report)
+        {
+            // Pads and cymbals
+            byte redPad    = report.RedPad;
+            byte yellowPad = report.YellowPad;
+            byte bluePad   = report.BluePad;
+            byte greenPad  = report.GreenPad;
+
+            byte yellowCym = report.YellowCymbal;
+            byte blueCym   = report.BlueCymbal;
+            byte greenCym  = report.GreenCymbal;
+
+            // Color flags
+            var buttons = (XboxGamepadButton)report.Buttons;
+            device.SetButtonState(Xbox360Button.B, (redPad != 0) || ((buttons & XboxGamepadButton.B) != 0));
+            device.SetButtonState(Xbox360Button.Y, ((yellowPad | yellowCym) != 0) || ((buttons & XboxGamepadButton.Y) != 0));
+            device.SetButtonState(Xbox360Button.X, ((bluePad | blueCym) != 0) || ((buttons & XboxGamepadButton.X) != 0));
+            device.SetButtonState(Xbox360Button.A, ((greenPad | greenCym) != 0) || ((buttons & XboxGamepadButton.A) != 0));
+
+            // Pad flag
+            device.SetButtonState(Xbox360Button.RightThumb,
+                (redPad | yellowPad | bluePad | greenPad) != 0);
+            // Cymbal flag
+            device.SetButtonState(Xbox360Button.RightShoulder,
+                (yellowCym | blueCym | greenCym) != 0);
+
+            // Pedals
+            device.SetButtonState(Xbox360Button.LeftShoulder,
+                (report.Buttons & (ushort)XboxDrumButton.KickOne) != 0);
+            device.SetButtonState(Xbox360Button.LeftThumb,
+                (report.Buttons & (ushort)XboxDrumButton.KickTwo) != 0);
+
+            // Velocities
+            device.SetAxisValue(
+                Xbox360Axis.LeftThumbX,
+                ByteToVelocity(redPad)
+            );
+            device.SetAxisValue(
+                Xbox360Axis.LeftThumbY,
+                ByteToVelocityNegative((byte)(yellowPad | yellowCym))
+            );
+            device.SetAxisValue(
+                Xbox360Axis.RightThumbX,
+                ByteToVelocity((byte)(bluePad | blueCym))
+            );
+            device.SetAxisValue(
+                Xbox360Axis.RightThumbY,
+                ByteToVelocityNegative((byte)(greenPad | greenCym))
+            );
+        }
+
+        // Maps with drums and cymbals fully separated
+        internal static void MapDrums_Individual(IXbox360Controller device, in XboxDrumInput report)
+        {
+            byte redPad    = report.RedPad;
+            byte yellowPad = report.YellowPad;
+            byte bluePad   = report.BluePad;
+            byte greenPad  = report.GreenPad;
+
+            byte yellowCym = report.YellowCymbal;
+            byte blueCym   = report.BlueCymbal;
+            byte greenCym  = report.GreenCymbal;
+
+            // Pads/face buttons
+            var buttons = (XboxGamepadButton)report.Buttons;
+            device.SetButtonState(Xbox360Button.B, (redPad != 0) || ((buttons & XboxGamepadButton.B) != 0));
+            device.SetButtonState(Xbox360Button.Y, (yellowPad != 0) || ((buttons & XboxGamepadButton.Y) != 0));
+            device.SetButtonState(Xbox360Button.X, (bluePad != 0) || ((buttons & XboxGamepadButton.X) != 0));
+            device.SetButtonState(Xbox360Button.A, (greenPad != 0) || ((buttons & XboxGamepadButton.A) != 0));
+
+            // Cymbals
+            device.SetButtonState(Xbox360Button.LeftThumb, yellowCym != 0);
+            device.SetButtonState(Xbox360Button.RightThumb, blueCym != 0);
+            device.SetButtonState(Xbox360Button.RightShoulder, greenCym != 0);
+
+            // Pedals
+            device.SetButtonState(Xbox360Button.LeftShoulder,
+                (report.Buttons & (ushort)XboxDrumButton.KickOne) != 0);
+            // Left trigger for second kick, we're all out of available buttons at this point
+            device.SetSliderValue(Xbox360Slider.LeftTrigger,
+                (report.Buttons & (ushort)XboxDrumButton.KickTwo) != 0 ? byte.MaxValue : byte.MinValue);
+
+            // No velocities, too many to map to 5 axes
         }
 
         private static short ByteToVelocity(byte value)
