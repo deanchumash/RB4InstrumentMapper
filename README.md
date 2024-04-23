@@ -16,7 +16,7 @@ All Xbox One instruments are supported (RB4 guitars/drums, GHL guitar), along wi
    - [Jaguar Guitar Firmware Update](#jaguar-guitar-firmware-update)
    - [Usage](#usage)
    - [Having Sync Issues?](#having-sync-issues)
-- [Using Guitar Hero Live Guitars and RB4 Wireless Legacy Adapters](#using-guitar-hero-live-guitars-and-rb4-wireless-legacy-adapters)
+- [Using Riffmasters, Guitar Hero Live Guitars, and RB4 Wireless Legacy Adapters](#using-riffmasters-guitar-hero-live-guitars-and-rb4-wireless-legacy-adapters)
    - [Setup](#setup-1)
    - [Usage](#usage-1)
 - [Mapping your Controls](#mapping-your-controls)
@@ -64,6 +64,10 @@ ViGEmBus is recommended, as it is significantly easier to use and requires no co
 ![Rock Band 4 Stratocaster](Docs/Images/Peripherals/rock-band-4-stratocaster.png "Rock Band 4 Stratocaster")
 ![Rock Band 4 Jaguar](Docs/Images/Peripherals/rock-band-4-jaguar.png "Rock Band 4 Jaguar")
 ![Rock Band 4 drumkit](Docs/Images/Peripherals/rock-band-4-drums.png "Rock Band 4 drumkit")
+
+*Note that RB4InstrumentMapper is NOT required to use guitars in Fortnite!*
+
+*For Riffmasters, please refer to [this section](#using-riffmasters-guitar-hero-live-guitars-and-rb4-wireless-legacy-adapters).*
 
 ### Setup
 
@@ -119,14 +123,17 @@ Some guitars/drumkits might not sync properly when using just the sync button. T
 
 ---
 
-## Using Guitar Hero Live Guitars and RB4 Wireless Legacy Adapters
+## Using Riffmasters, Guitar Hero Live Guitars, and RB4 Wireless Legacy Adapters
 
-![Guitar Hero Live Guitar](Docs/Images/Peripherals/guitar-hero-live-guitar.png "Guitar Hero Live guitar")
+![Riffmaster guitar](Docs/Images/Peripherals/riffmaster.png "Riffmaster guitar")
+![Guitar Hero Live guitar](Docs/Images/Peripherals/guitar-hero-live-guitar.png "Guitar Hero Live guitar")
 ![Rock Band 4 wireless legacy adapter](Docs/Images/Peripherals/rock-band-4-wireless-legacy.png "Rock Band 4 wireless legacy adapter")
+
+*Note that RB4InstrumentMapper is NOT required to use the Riffmaster in Fortnite!*
 
 ### Setup
 
-You will need to install the WinUSB driver onto the Rock Band 4 wireless legacy adapter or Guitar Hero Live guitar before using it. RB4InstrumentMapper is capable of doing this directly, through the `Configure Devices` button on its main menu:
+You will need to install the WinUSB driver onto the Riffmaster dongle, Guitar Hero Live dongle, or Rock Band 4 wireless legacy adapter before using it. RB4InstrumentMapper is capable of doing this directly, through the `Configure Devices` button on its main menu:
 
 1. Check the `Enable` checkbox under the `USB` group, then click the `Configure Devices` button underneath it.
 
