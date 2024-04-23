@@ -35,12 +35,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="..\Docs\Images\ProgramScreenshot.png" />
-    <Resource Include="..\Docs\Images\vJoyConfiguration.png" />
     <Resource Include="UsbDeviceListWindow\Icons\USB.png" />
     <Resource Include="UsbDeviceListWindow\Icons\Xbox.png" />
-    <None Include="..\.gitignore" />
-    <None Include="..\README.md" />
   </ItemGroup>
 
 </Project>
