@@ -140,7 +140,8 @@ You will need to install the WinUSB driver onto the Riffmaster dongle, Guitar He
 
    ![WinUSB configuration, left side](Docs/Images/Readme/usb-configure-left.png)
 
-3. Click the `Switch Driver` button and wait for it to switch the driver. The device will show up on the right side of the menu once it's done.
+3. For devices that use dongles (Riffmaster and GHL guitar), power it off to disconnect it from the dongle before switching the driver. Issues might occur otherwise.
+4. Click the `Switch Driver` button and wait for it to switch the driver. The device will show up on the right side of the menu once it's done.
 
    ![WinUSB configuration, right side](Docs/Images/Readme/usb-configure-right.png)
 
@@ -193,6 +194,10 @@ Now that RB4InstrumentMapper is set up and running, map your controls for each i
 ### YARG
 
 Refer to the [official documentation](https://docs.yarg.in/en/profiles).
+
+### RPCS3
+
+For RPCS3, use the `ViGEmBus (RPCS3 compatibility)` controller mode. This will change the mappings that RB4InstrumentMapper outputs so that little to no remapping is required to use instruments in RPCS3.
 
 ## Packet Logs
 
