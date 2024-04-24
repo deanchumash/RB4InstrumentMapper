@@ -30,14 +30,10 @@ All Xbox One instruments are supported (RB4 guitars/drums, GHL guitar), along wi
 
 ## Installation
 
-You will need:
-
-- Windows 10/11 64-bit
-- At least one of the following:
-  - [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases/latest)
-  - [vJoy](https://github.com/jshafer817/vJoy/releases/latest)
-
-ViGEmBus is recommended, as it is significantly easier to use and requires no configuration. vJoy is supported as an alternative on the off-chance you run into issues with ViGEmBus. Both can be installed simultaneously if desired, however RB4InstrumentMapper will only use one of them at a time.
+1. Download and install RB4InstrumentMapper from [the Releases page](https://github.com/TheNathannator/RB4InstrumentMapper/releases).
+2. Download and set up [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases/latest) or [vJoy](https://github.com/jshafer817/vJoy/releases/latest) using the guides below.
+   - ViGEmBus is recommended, as it is significantly easier to use and requires no configuration. vJoy is supported as an alternative on the off-chance you run into issues with ViGEmBus.
+   - Both can be installed simultaneously if desired, however RB4InstrumentMapper will only use one of them at a time.
 
 ### ViGEmBus Setup
 
@@ -56,6 +52,7 @@ ViGEmBus is recommended, as it is significantly easier to use and requires no co
    ![vJoy configuration screenshot](Docs/Images/Readme/vjoy-configuration.png "vJoy configuration screenshot")
 
 4. Click Apply.
+5. You're all set up!
 
 ---
 
