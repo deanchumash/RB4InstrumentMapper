@@ -92,12 +92,7 @@ namespace RB4InstrumentMapper.Parsing
                 // Acknowledgement
                 if ((header.Flags & XboxCommandFlags.NeedsAcknowledgement) != 0)
                 {
-                    var (sendHeader, acknowledge) = chunkBuffers.TryGetValue(header.CommandId, out var chunkBuffer)
-                        ? XboxAcknowledgement.FromMessage(header, commandData, chunkBuffer)
-                        : XboxAcknowledgement.FromMessage(header, commandData);
-
-                    SendMessage(sendHeader, ref acknowledge);
-                    header.Flags &= ~XboxCommandFlags.NeedsAcknowledgement;
+                    SendAcknowledge(ref header, commandData);
                 }
             }
 
@@ -282,6 +277,19 @@ namespace RB4InstrumentMapper.Parsing
         {
             SetUpHeader(ref header);
             return Parent.SendMessage(header, data);
+        }
+
+        private XboxResult SendAcknowledge(ref XboxCommandHeader header, ReadOnlySpan<byte> commandData)
+        {
+            var (sendHeader, acknowledge) = chunkBuffers.TryGetValue(header.CommandId, out var chunkBuffer)
+                ? XboxAcknowledgement.FromMessage(header, commandData, chunkBuffer)
+                : XboxAcknowledgement.FromMessage(header, commandData);
+
+            // Don't go through SetUpHeader, we must preserve the sequence ID in the header
+            header.Client = ClientId;
+            header.Flags &= ~XboxCommandFlags.NeedsAcknowledgement;
+
+            return Parent.SendMessage(sendHeader, ref acknowledge);
         }
 
         private void SetUpHeader(ref XboxCommandHeader header)
