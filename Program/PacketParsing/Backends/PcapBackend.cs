@@ -128,7 +128,7 @@ namespace RB4InstrumentMapper.Parsing
                 if (unsupportedDevices.Contains(deviceId))
                     return;
 
-                device = new XboxDevice(BackendSettings.MapperMode, BackendType.Pcap);
+                device = new XboxDevice(BackendType.Pcap);
                 devices.Add(deviceId, device);
                 PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was connected");
             }
@@ -156,7 +156,7 @@ namespace RB4InstrumentMapper.Parsing
                     case XboxResult.Reconnected:
                         device.Dispose();
                         devices.Remove(deviceId);
-                        device = new XboxDevice(BackendSettings.MapperMode, BackendType.Pcap);
+                        device = new XboxDevice(BackendType.Pcap);
                         devices.Add(deviceId, device);
                         PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was reconnected");
                         goto retry;

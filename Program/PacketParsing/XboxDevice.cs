@@ -39,20 +39,18 @@ namespace RB4InstrumentMapper.Parsing
         private readonly Dictionary<byte, XboxClient> clients = new Dictionary<byte, XboxClient>();
 
         private readonly int maxPacketSize;
-        private bool inputsEnabled = true;
+        private bool inputsEnabled = false;
 
-        public MappingMode MappingMode { get; }
         public BackendType Backend { get; }
         public bool MapGuideButton { get; }
         public bool InputsEnabled => inputsEnabled;
 
-        public XboxDevice(MappingMode mode, BackendType backend) : this(mode, backend, mapGuide: false, 0)
+        public XboxDevice(BackendType backend) : this(backend, mapGuide: false, 0)
         {
         }
 
-        protected XboxDevice(MappingMode mode, BackendType backend, bool mapGuide, int maxPacket)
+        protected XboxDevice(BackendType backend, bool mapGuide, int maxPacket)
         {
-            MappingMode = mode;
             Backend = backend;
             MapGuideButton = mapGuide;
             maxPacketSize = maxPacket;

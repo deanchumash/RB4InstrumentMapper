@@ -22,11 +22,11 @@ namespace RB4InstrumentMapper.Parsing
         private volatile bool readPackets = false;
         private volatile bool ioError = false;
 
-        private static volatile bool inputsEnabled = true;
-        private static bool previousInputsEnabled = true;
+        private volatile bool inputsEnabled = false;
+        private volatile bool previousInputsEnabled = false;
 
-        private XboxWinUsbDevice(USBDevice usb, USBInterface @interface, MappingMode mode)
-            : base(mode, BackendType.Usb, mapGuide: true, @interface.OutPipe.MaximumPacketSize)
+        private XboxWinUsbDevice(USBDevice usb, USBInterface @interface)
+            : base(BackendType.Usb, mapGuide: true, @interface.OutPipe.MaximumPacketSize)
         {
             UsbDevice = usb;
             mainInterface = @interface;
@@ -47,7 +47,7 @@ namespace RB4InstrumentMapper.Parsing
                     return null;
                 }
 
-                return new XboxWinUsbDevice(usbDevice, mainInterface, BackendSettings.MapperMode);
+                return new XboxWinUsbDevice(usbDevice, mainInterface);
             }
             catch (Exception ex)
             {

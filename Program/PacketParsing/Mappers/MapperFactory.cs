@@ -35,7 +35,7 @@ namespace RB4InstrumentMapper.Parsing
             XboxDeviceGuids.XboxGamepad,
         };
 
-        public static DeviceMapper GetMapper(XboxClient client)
+        private static CreateMapper GetMapperCreator(XboxClient client)
         {
             // Get unique interface GUID
             var interfaceGuids = client.Descriptor.InterfaceGuids;
@@ -82,11 +82,23 @@ namespace RB4InstrumentMapper.Parsing
                 return null;
             }
 
+            return func;
+        }
+
+        public static bool IsSupported(XboxClient client)
+        {
+            return GetMapperCreator(client) != null;
+        }
+
+        public static DeviceMapper GetMapper(XboxClient client)
+        {
+            var func = GetMapperCreator(client);
+            if (func == null)
+                return null;
+
             try
             {
-                var mapper = func(client);
-                mapper.EnableInputs(client.Parent.InputsEnabled);
-                return mapper;
+                return func(client);
             }
             catch (Exception ex)
             {
@@ -101,7 +113,7 @@ namespace RB4InstrumentMapper.Parsing
             DeviceMapper mapper;
             bool devicesAvailable;
 
-            var mode = client.Parent.MappingMode;
+            var mode = BackendSettings.MapperMode;
             switch (mode)
             {
                 case MappingMode.ViGEmBus:

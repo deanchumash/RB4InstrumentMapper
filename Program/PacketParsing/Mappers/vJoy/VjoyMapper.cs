@@ -109,9 +109,6 @@ namespace RB4InstrumentMapper.Parsing
 
         protected XboxResult SubmitReport()
         {
-            if (!inputsEnabled)
-                return XboxResult.Success;
-
             VjoyClient.UpdateDevice(deviceId, ref state);
             return XboxResult.Success;
         }

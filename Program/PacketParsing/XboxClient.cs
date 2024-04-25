@@ -104,30 +104,10 @@ namespace RB4InstrumentMapper.Parsing
                 return XboxResult.Success;
             previousReceiveSequence[header.CommandId] = header.SequenceCount;
 
-            // System commands are handled directly
-            XboxResult result;
-            if ((header.Flags & XboxCommandFlags.SystemCommand) != 0)
-            {
-                result = HandleSystemCommand(header.CommandId, commandData);
-            }
-            else
-            {
-                // Non-system commands are handled by the mapper
-                if (deviceMapper == null)
-                {
-                    deviceMapper = MapperFactory.GetFallbackMapper(this);
-                    if (deviceMapper == null)
-                    {
-                        // No more devices available, do nothing
-                        return XboxResult.Success;
-                    }
-
-                    PacketLogging.PrintMessage("Warning: This device was not encountered during its initial connection! It will use the fallback mapper instead of one specific to its device interface.");
-                    PacketLogging.PrintMessage("Reconnect it (or hit Start before connecting it) to ensure correct behavior.");
-                }
-
-                result = deviceMapper.HandleMessage(header.CommandId, commandData);
-            }
+            // Handle packet
+            var result = (header.Flags & XboxCommandFlags.SystemCommand) != 0
+                ? HandleSystemCommand(header.CommandId, commandData)
+                : HandleMapperCommand(header.CommandId, commandData);
 
             receivedFirstMessage = true;
             return result;
@@ -151,6 +131,28 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             return XboxResult.Success;
+        }
+
+        private XboxResult HandleMapperCommand(byte commandId, ReadOnlySpan<byte> commandData)
+        {
+            // Skip if inputs are disabled
+            if (!Parent.InputsEnabled)
+                return XboxResult.Success;
+
+            if (deviceMapper == null)
+            {
+                deviceMapper = MapperFactory.GetFallbackMapper(this);
+                if (deviceMapper == null)
+                {
+                    // No more devices available, do nothing
+                    return XboxResult.Success;
+                }
+
+                PacketLogging.PrintMessage("Warning: This device was not encountered during its initial connection! It will use the fallback mapper instead of one specific to its device interface.");
+                PacketLogging.PrintMessage("Reconnect it (or hit Start before connecting it) to ensure correct behavior.");
+            }
+
+            return deviceMapper.HandleMessage(commandId, commandData);
         }
 
         /// <summary>
@@ -202,8 +204,19 @@ namespace RB4InstrumentMapper.Parsing
                 return XboxResult.InvalidMessage;
 
             Descriptor = descriptor;
-            deviceMapper = MapperFactory.GetMapper(this);
-            if (deviceMapper == null)
+
+            bool supported;
+            if (Parent.InputsEnabled)
+            {
+                deviceMapper = MapperFactory.GetMapper(this);
+                supported = deviceMapper != null;
+            }
+            else
+            {
+                supported = MapperFactory.IsSupported(this);
+            }
+
+            if (!supported)
             {
                 // Device is unsupported
                 SendMessage(XboxConfiguration.PowerOffDevice);
@@ -306,7 +319,11 @@ namespace RB4InstrumentMapper.Parsing
 
         public void EnableInputs(bool enabled)
         {
-            deviceMapper?.EnableInputs(enabled);
+            deviceMapper?.Dispose();
+            deviceMapper = null;
+
+            if (enabled && Descriptor != null)
+                deviceMapper = MapperFactory.GetMapper(this);
         }
 
         public void Dispose()

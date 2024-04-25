@@ -126,15 +126,6 @@ namespace RB4InstrumentMapper.Parsing
             }
         }
 
-        public override void EnableInputs(bool enabled)
-        {
-            base.EnableInputs(enabled);
-            foreach (var subMapper in mappers.Values)
-            {
-                subMapper.Mapper.EnableInputs(enabled);
-            }
-        }
-
         private DeviceMapper GetMapperForDevice(XboxWirelessLegacyDeviceConnect connect)
         {
             var type = connect.DeviceType;

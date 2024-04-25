@@ -58,9 +58,6 @@ namespace RB4InstrumentMapper.Parsing
             if (!deviceConnected)
                 return XboxResult.Pending;
 
-            if (!inputsEnabled)
-                return XboxResult.Success;
-
             device.SubmitReport();
             return XboxResult.Success;
         }

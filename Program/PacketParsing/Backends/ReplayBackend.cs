@@ -39,10 +39,11 @@ namespace RB4InstrumentMapper.Parsing
                 return false;
             }
 
+            BackendSettings.MapperMode = mappingMode;
             Console.WriteLine($"Using mapping mode {mappingMode}");
 
             string[] lines = File.ReadAllLines(logPath);
-            var device = new XboxDevice(mappingMode, BackendType.Replay);
+            var device = new XboxDevice(BackendType.Replay);
             foreach (string line in lines)
             {
                 // Stop if the device has been removed
@@ -88,7 +89,7 @@ namespace RB4InstrumentMapper.Parsing
 
                         case XboxResult.Reconnected:
                             device.Dispose();
-                            device = new XboxDevice(mappingMode, BackendType.Replay);
+                            device = new XboxDevice(BackendType.Replay);
                             Console.WriteLine("Device was reconnected");
                             goto retry;
 
