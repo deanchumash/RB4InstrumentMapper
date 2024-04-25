@@ -42,6 +42,8 @@ You can now use the device in RB4InstrumentMapper. Note that games that natively
 
    ![Device Manager: Select USB device](../Images/WinUSB/Uninstall/device-manager-usb-device.png)
 
+   - If this category is not present, you may need to look in the `Other devices` category instead. In particular, if you're here to fix a failed revert from within the `Configure USB Devices` menu, this is where it will most likely be located.
+
 3. Right-click the device and hit `Uninstall device`.
 
    ![Device Manager: Uninstall USB device](../Images/WinUSB/Uninstall/device-manager-uninstall-device.png)
