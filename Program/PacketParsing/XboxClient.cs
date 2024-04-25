@@ -208,6 +208,7 @@ namespace RB4InstrumentMapper.Parsing
             bool supported;
             if (Parent.InputsEnabled)
             {
+                deviceMapper?.Dispose();
                 deviceMapper = MapperFactory.GetMapper(this);
                 supported = deviceMapper != null;
             }
@@ -256,7 +257,7 @@ namespace RB4InstrumentMapper.Parsing
             var keys = MemoryMarshal.Cast<byte, XboxKeystroke>(data);
             foreach (var key in keys)
             {
-                deviceMapper.HandleKeystroke(key);
+                deviceMapper?.HandleKeystroke(key);
             }
 
             return XboxResult.Success;
