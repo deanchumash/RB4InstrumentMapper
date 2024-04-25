@@ -151,11 +151,26 @@ namespace RB4InstrumentMapper.Parsing
 #endif
         }
 
-        public static DeviceMapper GetGuitarMapper(XboxClient client) => GetMapper(client,
-            (c) => new GuitarVigemMapper(c),
-            (c) => new GuitarVjoyMapper(c),
-            (c) => new GuitarRPCS3Mapper(c)
-        );
+        public static DeviceMapper GetGuitarMapper(XboxClient client)
+        {
+            const ushort RIFFMASTER_VENDOR_ID = 0x0E6F;
+            const ushort RIFFMASTER_PRODUCT_ID = 0x0248;
+
+            bool isRiffmaster = client.Arrival.VendorId == RIFFMASTER_VENDOR_ID &&
+                client.Arrival.ProductId == RIFFMASTER_PRODUCT_ID;
+
+            CreateMapper createVigem;
+            if (isRiffmaster)
+                createVigem = (c) => new RiffmasterVigemMapper(c);
+            else
+                createVigem = (c) => new GuitarVigemMapper(c);
+
+            return GetMapper(client,
+                createVigem,
+                (c) => new GuitarVjoyMapper(c),
+                (c) => new GuitarRPCS3Mapper(c)
+            );
+        }
 
         public static DeviceMapper GetDrumsMapper(XboxClient client) => GetMapper(client,
             (c) => new DrumsVigemMapper(c),
