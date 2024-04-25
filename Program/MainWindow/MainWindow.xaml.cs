@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -298,12 +299,12 @@ namespace RB4InstrumentMapper
         /// <summary>
         /// Configures the Pcap device and controller devices, and starts packet capture.
         /// </summary>
-        private void StartCapture()
+        private async void StartCapture()
         {
-            if (!StartPcapCapture() || !StartWinUsbCapture())
+            if (!StartPcapCapture() || !await StartWinUsbCapture())
             {
                 StopPcapCapture();
-                StopWinUsbCapture();
+                await StopWinUsbCapture();
                 return;
             }
 
@@ -349,10 +350,10 @@ namespace RB4InstrumentMapper
         /// <summary>
         /// Stops packet capture/mapping and resets Pcap/controller objects.
         /// </summary>
-        private void StopCapture()
+        private async void StopCapture()
         {
             StopPcapCapture();
-            StopWinUsbCapture();
+            await StopWinUsbCapture();
 
             // Store whether or not the packet log was created
             bool doPacketLogMessage = Logging.PacketLogExists;
@@ -431,13 +432,13 @@ namespace RB4InstrumentMapper
             return true;
         }
 
-        private bool StartWinUsbCapture()
+        private async Task<bool> StartWinUsbCapture()
         {
             // Ignore if disabled
             if (!Settings.Default.usbEnabled)
                 return true;
 
-            WinUsbBackend.EnableInputs(true);
+            await WinUsbBackend.StartCapture();
             return true;
         }
 
@@ -450,13 +451,13 @@ namespace RB4InstrumentMapper
             PcapBackend.StopCapture();
         }
 
-        private void StopWinUsbCapture()
+        private async Task StopWinUsbCapture()
         {
             // Ignore if disabled
             if (!Settings.Default.usbEnabled)
                 return;
 
-            WinUsbBackend.EnableInputs(false);
+            await WinUsbBackend.StopCapture();
         }
 
         private void SetPcapEnabled(bool enabled)

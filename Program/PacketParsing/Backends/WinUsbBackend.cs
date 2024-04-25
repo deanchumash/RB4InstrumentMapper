@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Nefarius.Drivers.WinUSB;
 using Nefarius.Utilities.DeviceManagement.Extensions;
 using Nefarius.Utilities.DeviceManagement.PnP;
@@ -46,13 +47,19 @@ namespace RB4InstrumentMapper.Parsing
             watcher.DeviceArrived -= DeviceArrived;
             watcher.DeviceRemoved -= DeviceRemoved;
 
-            foreach (var devicePath in devices.Keys)
-            {
-                RemoveDevice(devicePath, remove: false);
-            }
-            devices.Clear();
+            ResetDevices();
 
             Initialized = false;
+        }
+
+        public static void ResetDevices()
+        {
+                foreach (var devicePath in devices.Keys)
+                {
+                    RemoveDevice(devicePath, remove: false);
+                }
+
+                devices.Clear();
         }
 
         private static void DeviceArrived(DeviceEventArgs args)
@@ -96,13 +103,20 @@ namespace RB4InstrumentMapper.Parsing
             DeviceAddedOrRemoved?.Invoke();
         }
 
-        public static void EnableInputs(bool enabled)
+        public static Task StartCapture()
         {
-            inputsEnabled = enabled;
-            foreach (var device in devices.Values)
-            {
-                device.EnableInputs(enabled);
-            }
+            inputsEnabled = true;
+            PacketLogging.PrintMessage("Rebooting USB devices to ensure proper startup. Hang tight...");
+            PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+            return Task.Run(ResetDevices);
+        }
+
+        public static Task StopCapture()
+        {
+            inputsEnabled = false;
+            PacketLogging.PrintMessage("Rebooting USB devices to refresh them after mapping...");
+            PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+            return Task.Run(ResetDevices);
         }
 
         // WinUSB devices are exclusive-access, so we need a helper method to get already-initialized devices
