@@ -167,6 +167,8 @@ If you run into any issues with this process, you may try [installing the driver
 
 Devices will be detected automatically as they are connected/removed, though they will not be read until you hit Start.
 
+If you are having issues with inputs not being registered or other general weirdness, try unplugging and replugging the dongle/cable. Unfortunately this backend is still finnicky, so things may not work the smoothest.
+
 ---
 
 ## Mapping your Controls
