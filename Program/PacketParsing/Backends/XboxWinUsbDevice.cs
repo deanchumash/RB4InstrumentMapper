@@ -162,7 +162,17 @@ namespace RB4InstrumentMapper.Parsing
                 // Process packet data
                 var packetData = readBuffer.Slice(0, bytesRead);
                 var xboxPacket = new XboxPacket(packetData, directionIn: true);
-                HandlePacket(xboxPacket);
+                var result = HandlePacket(xboxPacket);
+                switch (result)
+                {
+                    case XboxResult.Success:
+                        break;
+
+                    case XboxResult.UnsupportedDevice:
+                        SendMessage(XboxConfiguration.PowerOffDevice);
+                        readPackets = false;
+                        break;
+                }
             }
 
             readPackets = false;

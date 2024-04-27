@@ -218,11 +218,7 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             if (!supported)
-            {
-                // Device is unsupported
-                SendMessage(XboxConfiguration.PowerOffDevice);
                 return XboxResult.UnsupportedDevice;
-            }
 
             // Send final set of initialization messages
             Debug.Assert(Descriptor.OutputCommands.Contains(XboxConfiguration.CommandId));
