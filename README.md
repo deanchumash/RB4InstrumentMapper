@@ -177,6 +177,12 @@ Now that RB4InstrumentMapper is set up and running, map your controls for each i
 
 ### Clone Hero
 
+If you're using a guitar in ViGEmBus mode, Clone Hero will automatically map your controls. You shouldn't need to do any manual mapping, unless you're using a Guitar Hero Live guitar, in which case you may need to swap your whammy and tilt bindings.
+
+- This automatic mapping will also apply to drumkits, however here the bindings will not be correct, as they are meant for guitars. You will need to remove the default bindings and do them manually.
+
+For drumkits, vJoy mode, or if you otherwise need to customize your controls:
+
 1. Press Space on the main menu.
 
    !["Press Space For Controls" label](Docs/Images/Readme/clone-hero-press-space.png)
@@ -191,6 +197,8 @@ Now that RB4InstrumentMapper is set up and running, map your controls for each i
 
 4. Repeat for each connected device.
 5. Click `Done`.
+
+If you require further help with mapping, you can ask in the [Clone Hero Discord server](https://discord.gg/Hsn4Cgu).
 
 ### YARG
 
