@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
     <ProjectReference Include="..\Program\RB4InstrumentMapper.csproj" SetConfiguration="Configuration=Release" />
   </ItemGroup>
 
