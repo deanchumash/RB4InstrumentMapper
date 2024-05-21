@@ -47,7 +47,7 @@ namespace RB4InstrumentMapper.Parsing
             // Skip header data if present
             int headerSeparator = input.LastIndexOf('|');
             if (headerSeparator >= 0)
-                input = input.Slice(headerSeparator).TrimStart();
+                input = input.Slice(++headerSeparator).TrimStart();
 
             // Parse data
             if (!ParsingUtils.TryParseBytesFromHexString(input, out byte[] bytes))
