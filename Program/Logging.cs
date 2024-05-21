@@ -154,7 +154,7 @@ namespace RB4InstrumentMapper
         {
             // Don't create log file if it hasn't been made yet
             // Packet log should be created manually
-            packetLog?.WriteLine(GetMessageHeader(text));
+            packetLog?.WriteLine(text);
         }
 
         /// <summary>
