@@ -129,6 +129,7 @@ namespace RB4InstrumentMapper.Parsing
                     return;
 
                 device = new XboxDevice(BackendType.Pcap);
+                device.EnableInputs(true);
                 devices.Add(deviceId, device);
                 PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was connected");
             }
