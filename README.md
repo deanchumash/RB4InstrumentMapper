@@ -204,6 +204,10 @@ If you require further help with mapping, you can ask in the [Clone Hero Discord
 
 Refer to the [official documentation](https://docs.yarg.in/en/profiles).
 
+### GHWT: Definitive Edition
+
+Refer to the [official documentation](https://ghwt.de/wiki/#/wtde/binding?id=binding-controllers).
+
 ### RPCS3
 
 For RPCS3, use the `ViGEmBus (RPCS3 compatibility)` controller mode. This will change the mappings that RB4InstrumentMapper outputs so that little to no remapping is required to use instruments in RPCS3.
