@@ -24,8 +24,8 @@ namespace RB4InstrumentMapper.Parsing
         public static bool LogPackets { get; set; } = false;
 
         /// <summary>
-        /// Whether or not verbose errors should be logged to the console.
+        /// Whether or not verbose messages should be logged to the console.
         /// </summary>
-        public static bool PrintVerboseErrors { get; set; } = false;
+        public static bool PrintVerboseLogs { get; set; } = false;
     }
 }

@@ -99,7 +99,7 @@ namespace RB4InstrumentMapper
             // Load console/log settings
             SetPacketDebug(Settings.Default.packetDebug);
             SetPacketDebugLog(Settings.Default.packetDebugLog);
-            SetVerboseErrors(Settings.Default.verboseErrorLog);
+            SetVerboseLogging(Settings.Default.verboseLogging);
 
             // Check for vJoy
             bool vjoyFound = VjoyClient.Enabled;
@@ -324,7 +324,7 @@ namespace RB4InstrumentMapper
 
             packetDebugCheckBox.IsEnabled = false;
             packetLogCheckBox.IsEnabled = false;
-            verboseErrorCheckBox.IsEnabled = false;
+            verboseLogCheckBox.IsEnabled = false;
 
             startStatusLabel.Content = "Running...";
             startButton.Content = "Stop";
@@ -371,7 +371,7 @@ namespace RB4InstrumentMapper
 
             packetDebugCheckBox.IsEnabled = true;
             packetLogCheckBox.IsEnabled = true;
-            verboseErrorCheckBox.IsEnabled = true;
+            verboseLogCheckBox.IsEnabled = true;
 
             controllerDeviceTypeCombo.IsEnabled = true;
 
@@ -536,16 +536,16 @@ namespace RB4InstrumentMapper
             packetDebugLog = Settings.Default.packetDebugLog = enabled;
         }
 
-        private void SetVerboseErrors(bool enabled)
+        private void SetVerboseLogging(bool enabled)
         {
-            if (packetDebugCheckBox.IsChecked != enabled)
+            if (verboseLogCheckBox.IsChecked != enabled)
             {
-                verboseErrorCheckBox.IsChecked = enabled;
+                verboseLogCheckBox.IsChecked = enabled;
                 return;
             }
 
-            Settings.Default.verboseErrorLog = enabled;
-            BackendSettings.PrintVerboseErrors = enabled;
+            Settings.Default.verboseLogging = enabled;
+            BackendSettings.PrintVerboseLogs = enabled;
         }
 
         private void SetDeviceType(ControllerType type)
@@ -711,10 +711,10 @@ namespace RB4InstrumentMapper
         /// <summary>
         /// Handles the verbose error checkbox being checked.
         /// </summary>
-        private void verboseErrorCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
+        private void verboseLogCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            bool verboseErrors = verboseErrorCheckBox.IsChecked.GetValueOrDefault();
-            SetVerboseErrors(verboseErrors);
+            bool verboseErrors = verboseLogCheckBox.IsChecked.GetValueOrDefault();
+            SetVerboseLogging(verboseErrors);
         }
 
         /// <summary>

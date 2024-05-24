@@ -11,7 +11,7 @@
     <Setting Name="packetDebugLog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="verboseErrorLog" Type="System.Boolean" Scope="User">
+    <Setting Name="verboseLogging" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="pcapEnabled" Type="System.Boolean" Scope="User">

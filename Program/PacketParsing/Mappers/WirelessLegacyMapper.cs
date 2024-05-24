@@ -49,14 +49,14 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = header.UserIndex;
             if (!mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerboseError($"Missing mapper for wireless legacy user index {userIndex}!");
+                PacketLogging.PrintVerbose($"Missing mapper for wireless legacy user index {userIndex}!");
                 return XboxResult.InvalidMessage;
             }
 
             // Verify the device type
             if (subMapper.DeviceType != header.DeviceType)
             {
-                PacketLogging.PrintVerboseError($"Wrong input type for wireless legacy user index {userIndex}! Expected {subMapper.DeviceType}, got {header.DeviceType}");
+                PacketLogging.PrintVerbose($"Wrong input type for wireless legacy user index {userIndex}! Expected {subMapper.DeviceType}, got {header.DeviceType}");
                 return XboxResult.InvalidMessage;
             }
 
@@ -75,7 +75,7 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = connect.UserIndex;
             if (mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerboseError($"Mapper already exists for legacy adapter user index {userIndex}! Overwriting.");
+                PacketLogging.PrintVerbose($"Mapper already exists for legacy adapter user index {userIndex}! Overwriting.");
                 subMapper.Mapper?.Dispose();
             }
 
@@ -93,7 +93,7 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = disconnect.UserIndex;
             if (!mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerboseError($"Missing mapper for legacy adapter user index {userIndex}!");
+                PacketLogging.PrintVerbose($"Missing mapper for legacy adapter user index {userIndex}!");
                 return XboxResult.InvalidMessage;
             }
 

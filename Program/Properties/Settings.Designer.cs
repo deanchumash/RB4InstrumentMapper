@@ -62,12 +62,12 @@ namespace RB4InstrumentMapper.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool verboseErrorLog {
+        public bool verboseLogging {
             get {
-                return ((bool)(this["verboseErrorLog"]));
+                return ((bool)(this["verboseLogging"]));
             }
             set {
-                this["verboseErrorLog"] = value;
+                this["verboseLogging"] = value;
             }
         }
         

@@ -117,7 +117,7 @@ namespace RB4InstrumentMapper.Parsing
                     case XboxResult.Reconnected:
                         return clientResult;
                     default:
-                        PacketLogging.PrintVerboseError($"Error handling message: {clientResult}");
+                        PacketLogging.PrintVerbose($"Error handling message: {clientResult}");
                         break;
                 }
 

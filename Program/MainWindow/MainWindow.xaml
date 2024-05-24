@@ -45,7 +45,7 @@
                 <Button x:Name="startButton" Content="Start" FontSize="18" Width="150" Margin="0,25,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsEnabled="False" Click="startButton_Click"/>
                 <CheckBox x:Name="packetDebugCheckBox" Content="Show packets (for debugging)" Height="22" Width="180" Margin="175,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="packetDebugCheckBox_CheckedChanged" Unchecked="packetDebugCheckBox_CheckedChanged"/>
                 <CheckBox x:Name="packetLogCheckBox" Content="Log packets to file" Height="22" Width="120" Margin="175,23,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="packetLogCheckBox_CheckedChanged" Unchecked="packetLogCheckBox_CheckedChanged"/>
-                <CheckBox x:Name="verboseErrorCheckBox" Content="Show verbose (unimportant) errors" Width="210" Margin="175,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="verboseErrorCheckBox_CheckedChanged" Unchecked="verboseErrorCheckBox_CheckedChanged"/>
+                <CheckBox x:Name="verboseLogCheckBox" Content="Show verbose (unimportant) messages" Width="210" Margin="175,46,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Checked="verboseLogCheckBox_CheckedChanged" Unchecked="verboseLogCheckBox_CheckedChanged"/>
             </Grid>
         </GroupBox>
         <GroupBox Header="Console" Margin="0,274,0,0">

@@ -27,12 +27,12 @@ namespace RB4InstrumentMapper.Parsing
             Console.WriteLine(message);
         }
 
-        public static void PrintVerboseError(string message)
+        public static void PrintVerbose(string message)
         {
-            // Always log errors to debug/log
+            // Always log messages to debug/log
             Debug.WriteLine(message);
             Logging.Main_WriteLine(message);
-            if (!BackendSettings.PrintVerboseErrors)
+            if (!BackendSettings.PrintVerboseLogs)
                 return;
 
             Console.WriteLine(message);
@@ -54,7 +54,7 @@ namespace RB4InstrumentMapper.Parsing
             Debug.WriteLine(ex);
             Logging.Main_WriteException(ex, message);
 
-            if (!BackendSettings.PrintVerboseErrors)
+            if (!BackendSettings.PrintVerboseLogs)
                 return;
 
             Console.WriteLine(message);
