@@ -28,9 +28,10 @@ namespace RB4InstrumentMapper.Parsing
                 // Safety check
                 if ((header.Flags & XboxCommandFlags.ChunkStart) == 0)
                 {
-                    // NOTE: Older Xbox One gamepads trigger this condition during authentication
-                    // Not really an issue since we don't handle that anyways, noting for posterity
-                    Debug.Fail("Invalid chunk sequence start! No chunk buffer exists, expected a chunk start packet");
+                    // Some devices trigger this condition during authentication,
+                    // so we don't fail if it's an auth packet
+                    Debug.Assert(header.CommandId == XboxAuthentication.CommandId,
+                        "Invalid chunk sequence start! No chunk buffer exists, expected a chunk start packet");
                     return XboxResult.InvalidMessage;
                 }
 
