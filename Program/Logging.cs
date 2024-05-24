@@ -14,6 +14,7 @@ namespace RB4InstrumentMapper
         /// The file to log errors to.
         /// </summary>
         private static StreamWriter mainLog = null;
+        private static readonly object mainLock = new object();
 
         /// <summary>
         /// Gets whether or not the main log exists.
@@ -26,6 +27,7 @@ namespace RB4InstrumentMapper
         /// The current file to log packets to.
         /// </summary>
         private static StreamWriter packetLog = null;
+        private static readonly object packetLock = new object();
 
         /// <summary>
         /// Gets whether or not a packet log exists.
@@ -91,15 +93,18 @@ namespace RB4InstrumentMapper
         /// </summary>
         public static bool CreateMainLog()
         {
-            if (!allowMainLogCreation || mainLog != null)
-                return true;
-
-            mainLog = CreateFileStream(LogFolderPath);
-            if (mainLog == null)
+            lock (mainLock)
             {
-                // Log could not be created, don't allow creating it again to prevent console spam
-                allowMainLogCreation = false;
-                return false;
+                if (!allowMainLogCreation || mainLog != null)
+                    return true;
+
+                mainLog = CreateFileStream(LogFolderPath);
+                if (mainLog == null)
+                {
+                    // Log could not be created, don't allow creating it again to prevent console spam
+                    allowMainLogCreation = false;
+                    return false;
+                }
             }
 
             Console.WriteLine("Created main log file.");
@@ -111,12 +116,15 @@ namespace RB4InstrumentMapper
         /// </summary>
         public static bool CreatePacketLog()
         {
-            if (packetLog != null)
-                return true;
+            lock (packetLock)
+            {
+                if (packetLog != null)
+                    return true;
 
-            packetLog = CreateFileStream(PacketLogFolderPath);
-            if (packetLog == null)
-                return false;
+                packetLog = CreateFileStream(PacketLogFolderPath);
+                if (packetLog == null)
+                    return false;
+            }
 
             Console.WriteLine("Created packet log file.");
             return true;
@@ -131,7 +139,11 @@ namespace RB4InstrumentMapper
             CreateMainLog();
 
             Debug.WriteLine(text);
-            mainLog?.WriteLine(GetMessageHeader(text));
+
+            lock (mainLock)
+            {
+                mainLog?.WriteLine(GetMessageHeader(text));
+            }
         }
 
         /// <summary>
@@ -147,14 +159,22 @@ namespace RB4InstrumentMapper
                 Debug.WriteLine(context);
             Debug.WriteLine(ex.ToString());
 
-            mainLog?.WriteException(ex, context);
+            lock (mainLock)
+            {
+                mainLog?.WriteException(ex, context);
+            }
         }
 
         public static void Packet_WriteLine(string text)
         {
             // Don't create log file if it hasn't been made yet
             // Packet log should be created manually
-            packetLog?.WriteLine(text);
+            // CreatePacketLog();
+
+            lock (packetLock)
+            {
+                packetLog?.WriteLine(text);
+            }
         }
 
         /// <summary>
@@ -162,8 +182,11 @@ namespace RB4InstrumentMapper
         /// </summary>
         public static void CloseMainLog()
         {
-            mainLog?.Close();
-            mainLog = null;
+            lock (mainLock)
+            {
+                mainLog?.Close();
+                mainLog = null;
+            }
         }
 
         /// <summary>
@@ -171,8 +194,11 @@ namespace RB4InstrumentMapper
         /// </summary>
         public static void ClosePacketLog()
         {
-            packetLog?.Close();
-            packetLog = null;
+            lock (packetLock)
+            {
+                packetLog?.Close();
+                packetLog = null;
+            }
         }
 
         /// <summary>
