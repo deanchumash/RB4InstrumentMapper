@@ -84,7 +84,7 @@ namespace RB4InstrumentMapper.Parsing
             device.StartReading();
             devices[devicePath] = device;
 
-            PacketLogging.PrintMessage($"Added device {devicePath}");
+            PacketLogging.PrintVerbose($"Added device {devicePath}");
             DeviceAddedOrRemoved?.Invoke();
         }
 
@@ -99,7 +99,7 @@ namespace RB4InstrumentMapper.Parsing
             if (remove)
                 devices.TryRemove(devicePath, out _);
 
-            PacketLogging.PrintMessage($"Removed device {devicePath}");
+            PacketLogging.PrintVerbose($"Removed device {devicePath}");
             DeviceAddedOrRemoved?.Invoke();
         }
 

@@ -171,7 +171,7 @@ namespace RB4InstrumentMapper.Parsing
             if (receivedFirstMessage)
                 return XboxResult.Reconnected;
 
-            PacketLogging.PrintMessage($"New client connected with ID {arrival.SerialNumber:X12}");
+            PacketLogging.PrintVerbose($"New client connected with ID {arrival.SerialNumber:X12}");
             Arrival = arrival;
 
             // Kick off descriptor request

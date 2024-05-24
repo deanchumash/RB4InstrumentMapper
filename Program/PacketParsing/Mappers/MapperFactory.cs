@@ -137,7 +137,7 @@ namespace RB4InstrumentMapper.Parsing
 
             if (mapper != null)
             {
-                PacketLogging.PrintMessage($"Created new {mapper.GetType().Name}");
+                PacketLogging.PrintVerbose($"Created new {mapper.GetType().Name}");
                 if (!devicesAvailable)
                     PacketLogging.PrintMessage("Device limit reached, no new devices will be handled.");
             }
@@ -200,7 +200,7 @@ namespace RB4InstrumentMapper.Parsing
         public static DeviceMapper GetWirelessLegacyMapper(XboxClient client)
         {
             var mapper = new WirelessLegacyMapper(client);
-            PacketLogging.PrintMessage($"Created new {nameof(WirelessLegacyMapper)} mapper");
+            PacketLogging.PrintVerbose($"Created new {nameof(WirelessLegacyMapper)} mapper");
             return mapper;
         }
 

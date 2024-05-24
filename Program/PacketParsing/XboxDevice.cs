@@ -112,7 +112,7 @@ namespace RB4InstrumentMapper.Parsing
                     case XboxResult.Disconnected:
                         client.Dispose();
                         clients.Remove(header.Client);
-                        PacketLogging.PrintMessage($"Client {client.Arrival.SerialNumber:X12} disconnected");
+                        PacketLogging.PrintVerbose($"Client {client.Arrival.SerialNumber:X12} disconnected");
                         break;
                     case XboxResult.Reconnected:
                         return clientResult;

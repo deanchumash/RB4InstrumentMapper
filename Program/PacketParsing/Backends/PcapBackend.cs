@@ -131,7 +131,7 @@ namespace RB4InstrumentMapper.Parsing
                 device = new XboxDevice(BackendType.Pcap);
                 device.EnableInputs(true);
                 devices.Add(deviceId, device);
-                PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was connected");
+                PacketLogging.PrintVerbose($"Device with ID {deviceId:X12} was connected");
             }
 
             var xboxPacket = new XboxPacket()
@@ -151,7 +151,7 @@ namespace RB4InstrumentMapper.Parsing
                     case XboxResult.Disconnected:
                         device.Dispose();
                         devices.Remove(deviceId);
-                        PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was disconnected");
+                        PacketLogging.PrintVerbose($"Device with ID {deviceId:X12} was disconnected");
                         break;
 
                     case XboxResult.Reconnected:
@@ -159,7 +159,7 @@ namespace RB4InstrumentMapper.Parsing
                         devices.Remove(deviceId);
                         device = new XboxDevice(BackendType.Pcap);
                         devices.Add(deviceId, device);
-                        PacketLogging.PrintMessage($"Device with ID {deviceId:X12} was reconnected");
+                        PacketLogging.PrintVerbose($"Device with ID {deviceId:X12} was reconnected");
                         goto retry;
 
                     case XboxResult.UnsupportedDevice:
