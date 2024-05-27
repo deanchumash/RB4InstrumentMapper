@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageReference Include="Nefarius.Drivers.WinUSB" Version="4.3.83" />
     <PackageReference Include="Nefarius.Utilities.DeviceManagement" Version="3.17.406" />
-    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
+    <!-- <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" /> -->
     <PackageReference Include="PacketDotNet" Version="1.4.7" />
     <PackageReference Include="SharpPcap" Version="6.2.5" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
@@ -32,6 +32,11 @@
       <HintPath>Dependencies\x64\vJoyInterfaceWrap.dll</HintPath>
     </Reference>
     <Content Include="Dependencies\x64\vJoyInterface.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+
+    <!-- Modified version of ViGEmBus, has fixes for unhandled/mishandled error codes -->
+    <Reference Include="Nefarius.ViGEm.Client, Version=1.21.257.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>Dependencies\Nefarius.ViGEm.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
