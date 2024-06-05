@@ -7,7 +7,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal abstract class DeviceMapper : IDisposable
     {
-        protected readonly XboxClient client;
+        protected readonly IBackendClient client;
         protected readonly bool mapGuideButton;
 
         protected bool disposed = false;
@@ -16,11 +16,11 @@ namespace RB4InstrumentMapper.Parsing
         /// Initializes a new device mapper with the given parent client,
         /// and option of whether or not to map the guide button.
         /// </summary>
-        public DeviceMapper(XboxClient client)
+        public DeviceMapper(IBackendClient client)
         {
             this.client = client;
 
-            mapGuideButton = client.Parent.MapGuideButton;
+            mapGuideButton = client.MapGuideButton;
         }
 
         ~DeviceMapper()

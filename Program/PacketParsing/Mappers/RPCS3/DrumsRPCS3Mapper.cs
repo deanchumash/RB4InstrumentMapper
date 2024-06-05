@@ -9,7 +9,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class DrumsRPCS3Mapper : VigemMapper
     {
-        public DrumsRPCS3Mapper(XboxClient client)
+        public DrumsRPCS3Mapper(IBackendClient client)
             : base(client)
         {
         }

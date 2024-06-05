@@ -9,7 +9,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class RiffmasterVigemMapper : VigemMapper
     {
-        public RiffmasterVigemMapper(XboxClient client)
+        public RiffmasterVigemMapper(IBackendClient client)
             : base(client)
         {
         }

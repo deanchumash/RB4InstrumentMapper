@@ -7,7 +7,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class FallbackRPCS3Mapper : VigemMapper
     {
-        public FallbackRPCS3Mapper(XboxClient client)
+        public FallbackRPCS3Mapper(IBackendClient client)
             : base(client)
         {
         }

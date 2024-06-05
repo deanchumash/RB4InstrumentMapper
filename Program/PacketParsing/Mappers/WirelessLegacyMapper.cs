@@ -17,7 +17,7 @@ namespace RB4InstrumentMapper.Parsing
         // Mappers are not guaranteed to be created for each device, unknown subtypes will be ignored and have none
         private readonly Dictionary<byte, SubMapper> mappers = new Dictionary<byte, SubMapper>();
 
-        public WirelessLegacyMapper(XboxClient client)
+        public WirelessLegacyMapper(IBackendClient client)
             : base(client)
         {
             client.SendMessage(XboxWirelessLegacyRequestDevices.RequestDevices);

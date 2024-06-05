@@ -24,7 +24,7 @@ namespace RB4InstrumentMapper.Parsing
         /// </summary>
         protected byte userIndex;
 
-        public VigemMapper(XboxClient client)
+        public VigemMapper(IBackendClient client)
             : base(client)
         {
             device = VigemClient.CreateDevice();

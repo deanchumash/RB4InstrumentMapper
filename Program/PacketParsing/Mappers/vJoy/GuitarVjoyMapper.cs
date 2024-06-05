@@ -10,7 +10,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class GuitarVjoyMapper : VjoyMapper
     {
-        public GuitarVjoyMapper(XboxClient client)
+        public GuitarVjoyMapper(IBackendClient client)
             : base(client)
         {
         }

@@ -10,7 +10,7 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal static class MapperFactory
     {
-        private delegate DeviceMapper CreateMapper(XboxClient client);
+        private delegate DeviceMapper CreateMapper(IBackendClient client);
 
         // Device interface GUIDs to check when getting the device mapper
         private static readonly Dictionary<Guid, CreateMapper> guidToMapper = new Dictionary<Guid, CreateMapper>()
@@ -35,10 +35,9 @@ namespace RB4InstrumentMapper.Parsing
             XboxDeviceGuids.XboxGamepad,
         };
 
-        private static CreateMapper GetMapperCreator(XboxClient client)
+        private static CreateMapper GetMapperCreator(HashSet<Guid> interfaceGuids)
         {
             // Get unique interface GUID
-            var interfaceGuids = client.Descriptor.InterfaceGuids;
             Guid interfaceGuid = default;
             foreach (var guid in interfaceGuids)
             {
@@ -85,14 +84,14 @@ namespace RB4InstrumentMapper.Parsing
             return func;
         }
 
-        public static bool IsSupported(XboxClient client)
+        public static bool IsSupported(HashSet<Guid> interfaceGuids)
         {
-            return GetMapperCreator(client) != null;
+            return GetMapperCreator(interfaceGuids) != null;
         }
 
-        public static DeviceMapper GetMapper(XboxClient client)
+        public static DeviceMapper GetMapper(IBackendClient client, HashSet<Guid> interfaceGuids)
         {
-            var func = GetMapperCreator(client);
+            var func = GetMapperCreator(interfaceGuids);
             if (func == null)
                 return null;
 
@@ -107,7 +106,7 @@ namespace RB4InstrumentMapper.Parsing
             }
         }
 
-        private static DeviceMapper GetMapper(XboxClient client, CreateMapper createVigem, CreateMapper createVjoy,
+        private static DeviceMapper GetMapper(IBackendClient client, CreateMapper createVigem, CreateMapper createVjoy,
             CreateMapper createRpcs3)
         {
             DeviceMapper mapper;
@@ -145,7 +144,7 @@ namespace RB4InstrumentMapper.Parsing
             return mapper;
         }
 
-        public static DeviceMapper GetGamepadMapper(XboxClient client)
+        public static DeviceMapper GetGamepadMapper(IBackendClient client)
         {
 #if DEBUG
             PacketLogging.PrintMessage("Warning: Gamepads are only supported in debug mode for testing purposes, they will not work in release builds.");
@@ -163,13 +162,13 @@ namespace RB4InstrumentMapper.Parsing
 #endif
         }
 
-        public static DeviceMapper GetGuitarMapper(XboxClient client)
+        public static DeviceMapper GetGuitarMapper(IBackendClient client)
         {
             const ushort RIFFMASTER_VENDOR_ID = 0x0E6F;
             const ushort RIFFMASTER_PRODUCT_ID = 0x0248;
 
-            bool isRiffmaster = client.Arrival.VendorId == RIFFMASTER_VENDOR_ID &&
-                client.Arrival.ProductId == RIFFMASTER_PRODUCT_ID;
+            bool isRiffmaster = client.VendorId == RIFFMASTER_VENDOR_ID &&
+                client.ProductId == RIFFMASTER_PRODUCT_ID;
 
             CreateMapper createVigem;
             if (isRiffmaster)
@@ -184,27 +183,27 @@ namespace RB4InstrumentMapper.Parsing
             );
         }
 
-        public static DeviceMapper GetDrumsMapper(XboxClient client) => GetMapper(client,
+        public static DeviceMapper GetDrumsMapper(IBackendClient client) => GetMapper(client,
             (c) => new DrumsVigemMapper(c),
             (c) => new DrumsVjoyMapper(c),
             (c) => new DrumsRPCS3Mapper(c)
         );
 
-        public static DeviceMapper GetGHLGuitarMapper(XboxClient client) => GetMapper(client,
+        public static DeviceMapper GetGHLGuitarMapper(IBackendClient client) => GetMapper(client,
             (c) => new GHLGuitarVigemMapper(c),
             (c) => new GHLGuitarVjoyMapper(c),
             // No mapping differences between RPCS3 and ViGEm modes
             (c) => new GHLGuitarVigemMapper(c)
         );
 
-        public static DeviceMapper GetWirelessLegacyMapper(XboxClient client)
+        public static DeviceMapper GetWirelessLegacyMapper(IBackendClient client)
         {
             var mapper = new WirelessLegacyMapper(client);
             PacketLogging.PrintVerbose($"Created new {nameof(WirelessLegacyMapper)} mapper");
             return mapper;
         }
 
-        public static DeviceMapper GetFallbackMapper(XboxClient client) => GetMapper(client,
+        public static DeviceMapper GetFallbackMapper(IBackendClient client) => GetMapper(client,
             (c) => new FallbackVigemMapper(c),
             (c) => new FallbackVjoyMapper(c),
             (c) => new FallbackRPCS3Mapper(c)

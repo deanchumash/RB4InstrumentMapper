@@ -78,10 +78,10 @@ namespace RB4InstrumentMapper.Parsing
 
         public static readonly XboxMessage<XboxGHLGuitarOutput> Message = CreateMessage();
 
-        private readonly XboxClient client;
+        private readonly IBackendClient client;
         private readonly Timer sendTimer;
 
-        public unsafe XboxGHLGuitarKeepAlive(XboxClient client)
+        public unsafe XboxGHLGuitarKeepAlive(IBackendClient client)
         {
             this.client = client;
             sendTimer = new Timer(SendKeepAlive, null, 0, SendPeriodMilliseconds);

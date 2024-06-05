@@ -8,7 +8,7 @@ namespace RB4InstrumentMapper.Parsing
     /// <summary>
     /// A logical client on an Xbox device.
     /// </summary>
-    internal class XboxClient : IDisposable
+    internal class XboxClient : IDisposable, IBackendClient
     {
         /// <summary>
         /// The parent device of the client.
@@ -29,6 +29,11 @@ namespace RB4InstrumentMapper.Parsing
         /// The ID of the client.
         /// </summary>
         public byte ClientId { get; }
+
+        ushort IBackendClient.VendorId => Arrival.VendorId;
+        ushort IBackendClient.ProductId => Arrival.ProductId;
+
+        bool IBackendClient.MapGuideButton => Parent.MapGuideButton;
 
         private DeviceMapper deviceMapper;
 
@@ -209,12 +214,12 @@ namespace RB4InstrumentMapper.Parsing
             if (Parent.InputsEnabled)
             {
                 deviceMapper?.Dispose();
-                deviceMapper = MapperFactory.GetMapper(this);
+                deviceMapper = MapperFactory.GetMapper(this, Descriptor.InterfaceGuids);
                 supported = deviceMapper != null;
             }
             else
             {
-                supported = MapperFactory.IsSupported(this);
+                supported = MapperFactory.IsSupported(Descriptor.InterfaceGuids);
             }
 
             if (!supported)
@@ -259,31 +264,31 @@ namespace RB4InstrumentMapper.Parsing
             return XboxResult.Success;
         }
 
-        internal unsafe XboxResult SendMessage(XboxMessage message)
+        public unsafe XboxResult SendMessage(XboxMessage message)
         {
             return SendMessage(message.Header, message.Data);
         }
 
-        internal unsafe XboxResult SendMessage<T>(XboxMessage<T> message)
+        public unsafe XboxResult SendMessage<T>(XboxMessage<T> message)
             where T : unmanaged
         {
             return SendMessage(message.Header, ref message.Data);
         }
 
-        internal unsafe XboxResult SendMessage(XboxCommandHeader header)
+        public unsafe XboxResult SendMessage(XboxCommandHeader header)
         {
             SetUpHeader(ref header);
             return Parent.SendMessage(header);
         }
 
-        internal unsafe XboxResult SendMessage<T>(XboxCommandHeader header, ref T data)
+        public unsafe XboxResult SendMessage<T>(XboxCommandHeader header, ref T data)
             where T : unmanaged
         {
             SetUpHeader(ref header);
             return Parent.SendMessage(header, ref data);
         }
 
-        internal XboxResult SendMessage(XboxCommandHeader header, Span<byte> data)
+        public XboxResult SendMessage(XboxCommandHeader header, Span<byte> data)
         {
             SetUpHeader(ref header);
             return Parent.SendMessage(header, data);
@@ -320,7 +325,7 @@ namespace RB4InstrumentMapper.Parsing
             deviceMapper = null;
 
             if (enabled && Descriptor != null)
-                deviceMapper = MapperFactory.GetMapper(this);
+                deviceMapper = MapperFactory.GetMapper(this, Descriptor.InterfaceGuids);
         }
 
         public void Dispose()

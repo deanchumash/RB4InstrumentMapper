@@ -11,7 +11,7 @@ namespace RB4InstrumentMapper.Parsing
     {
         private XboxGHLGuitarKeepAlive keepAlive;
 
-        public GHLGuitarVigemMapper(XboxClient client)
+        public GHLGuitarVigemMapper(IBackendClient client)
             : base(client)
         {
             keepAlive = new XboxGHLGuitarKeepAlive(client);
