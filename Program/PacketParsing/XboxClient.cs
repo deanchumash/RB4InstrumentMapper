@@ -214,12 +214,12 @@ namespace RB4InstrumentMapper.Parsing
             if (Parent.InputsEnabled)
             {
                 deviceMapper?.Dispose();
-                deviceMapper = MapperFactory.GetMapper(this, Descriptor.InterfaceGuids);
+                deviceMapper = MapperFactory.GetByInterfaceIds(this, Descriptor.InterfaceGuids);
                 supported = deviceMapper != null;
             }
             else
             {
-                supported = MapperFactory.IsSupported(Descriptor.InterfaceGuids);
+                supported = MapperFactory.IsSupportedByInterfaceIds(Descriptor.InterfaceGuids);
             }
 
             if (!supported)
@@ -325,7 +325,7 @@ namespace RB4InstrumentMapper.Parsing
             deviceMapper = null;
 
             if (enabled && Descriptor != null)
-                deviceMapper = MapperFactory.GetMapper(this, Descriptor.InterfaceGuids);
+                deviceMapper = MapperFactory.GetByInterfaceIds(this, Descriptor.InterfaceGuids);
         }
 
         public void Dispose()

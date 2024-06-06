@@ -12,8 +12,28 @@ namespace RB4InstrumentMapper.Parsing
     {
         private delegate DeviceMapper CreateMapper(IBackendClient client);
 
-        // Device interface GUIDs to check when getting the device mapper
-        private static readonly Dictionary<Guid, CreateMapper> guidToMapper = new Dictionary<Guid, CreateMapper>()
+        private static readonly Dictionary<(ushort vendorId, ushort productId), CreateMapper> hardwareIdLookup
+            = new Dictionary<(ushort, ushort), CreateMapper>()
+        {
+            // Guitars
+            { (0x0738, 0x4161), GetGuitarMapper }, // MadCatz Stratocaster
+            { (0x0E6F, 0x0170), GetGuitarMapper }, // PDP Jaguar
+            { (0x0E6F, 0x0248), GetGuitarMapper }, // PDP Riffmaster
+
+            // Drumkits
+            { (0x0738, 0x4262), GetDrumsMapper }, // MadCatz
+            { (0x0E6F, 0x0171), GetDrumsMapper }, // PDP
+
+            // Other
+            { (0x1430, 0x079B), GetGHLGuitarMapper }, // Guitar Hero Live guitar
+            { (0x0738, 0x4164), GetWirelessLegacyMapper }, // MadCatz Wireless Legacy adapter
+
+            // Gamepads
+            { (0x045E, 0x02DD), GetGamepadMapper }, // Microsoft 1st-revision gamepad
+            { (0x045E, 0x0B00), GetGamepadMapper }, // Microsoft Elite Series 2 gamepad
+        };
+
+        private static readonly Dictionary<Guid, CreateMapper> interfaceGuidLookup = new Dictionary<Guid, CreateMapper>()
         {
             { XboxDeviceGuids.MadCatzGuitar,  GetGuitarMapper },
             { XboxDeviceGuids.PdpGuitar,      GetGuitarMapper },
@@ -35,13 +55,13 @@ namespace RB4InstrumentMapper.Parsing
             XboxDeviceGuids.XboxGamepad,
         };
 
-        private static CreateMapper GetMapperCreator(HashSet<Guid> interfaceGuids)
+        private static CreateMapper GetByInterfaceIds(HashSet<Guid> interfaceGuids)
         {
             // Get unique interface GUID
             Guid interfaceGuid = default;
             foreach (var guid in interfaceGuids)
             {
-                if (!guidToMapper.ContainsKey(guid))
+                if (!interfaceGuidLookup.ContainsKey(guid))
                     continue;
 
                 if (interfaceGuid != default)
@@ -74,7 +94,7 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             // Get mapper creation delegate for interface GUID
-            if (!guidToMapper.TryGetValue(interfaceGuid, out var func))
+            if (!interfaceGuidLookup.TryGetValue(interfaceGuid, out var func))
             {
                 PacketLogging.PrintMessage($"Could not get a specific mapper for interface {interfaceGuid}! Device will not be mapped.");
                 PacketLogging.PrintMessage($"Consider filing a GitHub issue with the GUID above if this device should be supported.");
@@ -84,14 +104,40 @@ namespace RB4InstrumentMapper.Parsing
             return func;
         }
 
-        public static bool IsSupported(HashSet<Guid> interfaceGuids)
+        public static bool IsSupportedByHardwareIds(ushort vendorId, ushort productId)
         {
-            return GetMapperCreator(interfaceGuids) != null;
+            return hardwareIdLookup.ContainsKey((vendorId, productId));
         }
 
-        public static DeviceMapper GetMapper(IBackendClient client, HashSet<Guid> interfaceGuids)
+        public static bool IsSupportedByInterfaceIds(HashSet<Guid> interfaceGuids)
         {
-            var func = GetMapperCreator(interfaceGuids);
+            return GetByInterfaceIds(interfaceGuids) != null;
+        }
+
+        public static DeviceMapper GetByHardwareIds(IBackendClient client)
+        {
+            if (!hardwareIdLookup.TryGetValue((client.VendorId, client.ProductId), out var func))
+            {
+                // Verbose since hardware ID lookup is meant for GameInput,
+                // and we don't want to warn unnecessarily for devices that don't need to be handled
+                PacketLogging.PrintVerbose($"Device with hardware IDs {client.VendorId:X4}{client.ProductId:X4} is not recognized! Device will not be mapped.");
+                return null;
+            }
+
+            try
+            {
+                return func(client);
+            }
+            catch (Exception ex)
+            {
+                PacketLogging.PrintException("Failed to create mapper for device!", ex);
+                return null;
+            }
+        }
+
+        public static DeviceMapper GetByInterfaceIds(IBackendClient client, HashSet<Guid> interfaceGuids)
+        {
+            var func = GetByInterfaceIds(interfaceGuids);
             if (func == null)
                 return null;
 
