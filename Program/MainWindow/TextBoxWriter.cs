@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace RB4InstrumentMapper
 {
@@ -79,7 +80,7 @@ namespace RB4InstrumentMapper
             string newText = currentLineCache.ToString();
             currentLineCache.Clear();
             visibleTextCache.Enqueue(newText);
-            textBox.Dispatcher.BeginInvoke(updateText);
+            textBox.Dispatcher.BeginInvoke(DispatcherPriority.Background, updateText);
         }
 
         private void UpdateText()
