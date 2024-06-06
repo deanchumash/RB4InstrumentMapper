@@ -54,12 +54,12 @@ namespace RB4InstrumentMapper.Parsing
 
         public static void ResetDevices()
         {
-                foreach (var devicePath in devices.Keys)
-                {
-                    RemoveDevice(devicePath, remove: false);
-                }
+            foreach (var devicePath in devices.Keys)
+            {
+                RemoveDevice(devicePath, remove: false);
+            }
 
-                devices.Clear();
+            devices.Clear();
         }
 
         private static void DeviceArrived(DeviceEventArgs args)
@@ -84,7 +84,7 @@ namespace RB4InstrumentMapper.Parsing
             device.StartReading();
             devices[devicePath] = device;
 
-            PacketLogging.PrintVerbose($"Added device {devicePath}");
+            PacketLogging.PrintMessage($"USB device {devicePath} connected");
             DeviceAddedOrRemoved?.Invoke();
         }
 
@@ -99,7 +99,7 @@ namespace RB4InstrumentMapper.Parsing
             if (remove)
                 devices.TryRemove(devicePath, out _);
 
-            PacketLogging.PrintVerbose($"Removed device {devicePath}");
+            PacketLogging.PrintMessage($"USB device {devicePath} disconnected");
             DeviceAddedOrRemoved?.Invoke();
         }
 
