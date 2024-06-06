@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using RB4InstrumentMapper.Vjoy;
 using vJoyInterfaceWrap;
@@ -12,9 +13,13 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class GamepadVjoyMapper : VjoyMapper
     {
+        private bool rumbling;
+        private Stopwatch rumbleCooldown = new Stopwatch();
+
         public GamepadVjoyMapper(IBackendClient client)
             : base(client)
         {
+            rumbleCooldown.Start();
         }
 
         protected override XboxResult OnMessageReceived(byte command, ReadOnlySpan<byte> data)
@@ -35,6 +40,28 @@ namespace RB4InstrumentMapper.Parsing
                 return XboxResult.InvalidMessage;
 
             HandleReport(ref state, gamepadReport);
+
+            // Rumble, for output testing
+            short x = Math.Abs(gamepadReport.LeftStickX);
+            short y = Math.Abs(gamepadReport.LeftStickY);
+            short max = Math.Max(x, y);
+            if (max > (short.MaxValue / 10f))
+            {
+                if (rumbleCooldown.ElapsedMilliseconds > 50)
+                {
+                    rumbling = true;
+                    byte left = (byte)(x >> 8);
+                    byte right = (byte)(y >> 8);
+                    client.SendMessage(XboxGamepadRumble.Create(left, right));
+                    rumbleCooldown.Restart();
+                }
+            }
+            else if (rumbling)
+            {
+                rumbling = false;
+                client.SendMessage(XboxGamepadRumble.Create(0, 0));
+            }
+
             return SubmitReport();
         }
 

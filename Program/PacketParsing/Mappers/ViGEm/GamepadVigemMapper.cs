@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Nefarius.ViGEm.Client.Targets;
 using Nefarius.ViGEm.Client.Targets.Xbox360;
 
@@ -11,9 +12,13 @@ namespace RB4InstrumentMapper.Parsing
     /// </summary>
     internal class GamepadVigemMapper : VigemMapper
     {
+        private bool rumbling;
+        private Stopwatch rumbleCooldown = new Stopwatch();
+
         public GamepadVigemMapper(IBackendClient client)
             : base(client)
         {
+            rumbleCooldown.Start();
         }
 
         protected override XboxResult OnMessageReceived(byte command, ReadOnlySpan<byte> data)
@@ -34,6 +39,28 @@ namespace RB4InstrumentMapper.Parsing
                 return XboxResult.InvalidMessage;
 
             HandleReport(device, gamepadReport);
+
+            // Rumble, for output testing
+            float x = Math.Abs(gamepadReport.LeftStickX / 32768f);
+            float y = Math.Abs(gamepadReport.LeftStickY / 32768f);
+            float max = Math.Max(x, y);
+            if (max > 0.1f)
+            {
+                if (rumbleCooldown.ElapsedMilliseconds > 50)
+                {
+                    rumbling = true;
+                    byte left = (byte)(x * 255);
+                    byte right = (byte)(y * 255);
+                    client.SendMessage(XboxGamepadRumble.Create(left, right));
+                    rumbleCooldown.Restart();
+                }
+            }
+            else if (rumbling)
+            {
+                rumbling = false;
+                client.SendMessage(XboxGamepadRumble.Create(0, 0));
+            }
+
             return SubmitReport();
         }
 
