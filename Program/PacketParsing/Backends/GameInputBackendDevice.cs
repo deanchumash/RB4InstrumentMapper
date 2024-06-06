@@ -169,7 +169,11 @@ namespace RB4InstrumentMapper.Parsing
                 UIntPtr readSize = rawReport.GetRawData(size, buffer);
                 Debug.Assert(size == readSize);
 
-                var result = deviceMapper.HandleMessage((byte)reportId, new ReadOnlySpan<byte>(buffer, (int)size));
+                var data = new ReadOnlySpan<byte>(buffer, (int)size);
+                var packet = new XboxPacket(data, directionIn: true);
+                PacketLogging.LogPacket(packet);
+
+                var result = deviceMapper.HandleMessage((byte)reportId, data);
                 if (result == XboxResult.Disconnected)
                     return false;
             }
@@ -203,6 +207,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public unsafe XboxResult SendMessage(XboxCommandHeader header, Span<byte> data)
         {
+            var xboxPacket = new XboxPacket(data, directionIn: false);
+            PacketLogging.LogPacket(xboxPacket);
+
             if (ioError)
                 return XboxResult.Disconnected;
 
