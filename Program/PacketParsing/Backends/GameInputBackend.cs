@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SharpGameInput;
 
@@ -15,6 +15,10 @@ namespace RB4InstrumentMapper.Parsing
             = new ConcurrentDictionary<IGameInputDevice, GameInputBackendDevice>();
 
         private static GameInputCallbackToken deviceCallbackToken;
+
+        public static int DeviceCount => devices.Count;
+
+        public static event Action DeviceCountChanged;
 
         public static bool Initialized { get; private set; } = false;
 
@@ -95,6 +99,7 @@ namespace RB4InstrumentMapper.Parsing
 
             PacketLogging.PrintMessage($"Removing GameInput device {DeviceInfoToString(device.Device.DeviceInfo)}");
             device.Dispose();
+            DeviceCountChanged?.Invoke();
         }
 
         private static void OnDeviceStatusChange(
@@ -129,8 +134,11 @@ namespace RB4InstrumentMapper.Parsing
                 var backendDevice = new GameInputBackendDevice(gameInput, permaDevice);
                 backendDevice.EnableInputs(inputsEnabled);
 
-                devices.TryAdd(permaDevice, backendDevice);
-                PacketLogging.PrintMessage($"GameInput device {DeviceInfoToString(info)} connected");
+                if (devices.TryAdd(permaDevice, backendDevice))
+                {
+                    PacketLogging.PrintMessage($"GameInput device {DeviceInfoToString(info)} connected");
+                    DeviceCountChanged?.Invoke();
+                }
             }
             else
             {
@@ -139,6 +147,7 @@ namespace RB4InstrumentMapper.Parsing
 
                 backendDevice.Dispose();
                 PacketLogging.PrintMessage($"GameInput device {DeviceInfoToString(info)} disconnected");
+                DeviceCountChanged?.Invoke();
             }
         }
 

@@ -25,18 +25,6 @@ namespace RB4InstrumentMapper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string pcapDevice {
-            get {
-                return ((string)(this["pcapDevice"]));
-            }
-            set {
-                this["pcapDevice"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool packetDebug {
             get {
@@ -68,18 +56,6 @@ namespace RB4InstrumentMapper.Properties {
             }
             set {
                 this["verboseLogging"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool pcapEnabled {
-            get {
-                return ((bool)(this["pcapEnabled"]));
-            }
-            set {
-                this["pcapEnabled"] = value;
             }
         }
         

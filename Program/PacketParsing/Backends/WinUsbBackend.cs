@@ -17,7 +17,7 @@ namespace RB4InstrumentMapper.Parsing
 
         public static int DeviceCount => devices.Count;
 
-        public static event Action DeviceAddedOrRemoved;
+        public static event Action DeviceCountChanged;
 
         public static bool Initialized { get; private set; } = false;
 
@@ -85,7 +85,7 @@ namespace RB4InstrumentMapper.Parsing
             devices[devicePath] = device;
 
             PacketLogging.PrintMessage($"USB device {devicePath} connected");
-            DeviceAddedOrRemoved?.Invoke();
+            DeviceCountChanged?.Invoke();
         }
 
         private static void RemoveDevice(string devicePath, bool remove = true)
@@ -100,7 +100,7 @@ namespace RB4InstrumentMapper.Parsing
                 devices.TryRemove(devicePath, out _);
 
             PacketLogging.PrintMessage($"USB device {devicePath} disconnected");
-            DeviceAddedOrRemoved?.Invoke();
+            DeviceCountChanged?.Invoke();
         }
 
         public static Task StartCapture()

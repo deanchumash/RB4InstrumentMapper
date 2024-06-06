@@ -10,7 +10,6 @@ using RB4InstrumentMapper.Parsing;
 using RB4InstrumentMapper.Properties;
 using RB4InstrumentMapper.Vigem;
 using RB4InstrumentMapper.Vjoy;
-using SharpPcap;
 
 namespace RB4InstrumentMapper
 {
@@ -22,11 +21,6 @@ namespace RB4InstrumentMapper
         private static Dispatcher uiDispatcher = null;
 
         /// <summary>
-        /// The selected Pcap device.
-        /// </summary>
-        private ILiveDevice pcapSelectedDevice = null;
-
-        /// <summary>
         /// Whether or not packet capture is active.
         /// </summary>
         private bool packetCaptureActive = false;
@@ -35,16 +29,6 @@ namespace RB4InstrumentMapper
         /// Whether or not packets should be logged to a file.
         /// </summary>
         private bool packetDebugLog = false;
-
-        /// <summary>
-        /// Whether or not packets should be logged to a file.
-        /// </summary>
-        private bool firstPcapRefresh = true;
-
-        /// <summary>
-        /// Prefix for Pcap combo box items.
-        /// </summary>
-        private const string pcapComboBoxPrefix = "pcapDeviceComboBoxItem";
 
         /// <summary>
         /// Available controller emulation types.
@@ -79,27 +63,6 @@ namespace RB4InstrumentMapper
             // Connect to console
             var textboxConsole = new TextBoxWriter(messageConsole);
             Console.SetOut(textboxConsole);
-
-            // Check for Pcap
-            try
-            {
-                var pcapDeviceList = CaptureDeviceList.Instance;
-                pcapDeviceList.Refresh();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Could not load Pcap interface! Pcap backend will be unavailable.");
-                Logging.Main_WriteException(ex, "Failed to load Pcap interface!");
-
-                // Force-disable Pcap backend
-                Settings.Default.pcapEnabled = false;
-                pcapEnabledCheckBox.IsEnabled = false;
-            }
-
-            // Load console/log settings
-            SetPacketDebug(Settings.Default.packetDebug);
-            SetPacketDebugLog(Settings.Default.packetDebugLog);
-            SetVerboseLogging(Settings.Default.verboseLogging);
 
             // Check for vJoy
             bool vjoyFound = VjoyClient.Enabled;
@@ -143,12 +106,6 @@ namespace RB4InstrumentMapper
                 rpcs3DeviceTypeOption.IsSelected = false;
             }
 
-            // Load backend settings
-            // Done after initializing virtual controller clients
-            SetDeviceType((ControllerType)Settings.Default.controllerDeviceType);
-            SetPcapEnabled(Settings.Default.pcapEnabled);
-            SetUsbEnabled(Settings.Default.usbEnabled);
-
             // Exit if neither ViGEmBus nor vJoy are installed
             if (!vjoyFound && !vigemFound)
             {
@@ -156,6 +113,19 @@ namespace RB4InstrumentMapper
                 Application.Current.Shutdown();
                 return;
             }
+
+            // Load console/log settings
+            SetPacketDebug(Settings.Default.packetDebug);
+            SetPacketDebugLog(Settings.Default.packetDebugLog);
+            SetVerboseLogging(Settings.Default.verboseLogging);
+
+            // Load backend settings
+            // Done after initializing virtual controller clients
+            SetDeviceType((ControllerType)Settings.Default.controllerDeviceType);
+            SetUsbEnabled(Settings.Default.usbEnabled);
+
+            GameInputBackend.DeviceCountChanged += GameInputDeviceCountChanged;
+            GameInputBackend.Initialize();
         }
 
         /// <summary>
@@ -168,8 +138,12 @@ namespace RB4InstrumentMapper
             {
                 StopCapture();
             }
+
+            GameInputBackend.Uninitialize();
+            GameInputBackend.DeviceCountChanged -= GameInputDeviceCountChanged;
+
             WinUsbBackend.Uninitialize();
-            WinUsbBackend.DeviceAddedOrRemoved -= WinUsbDeviceAddedOrRemoved;
+            WinUsbBackend.DeviceCountChanged -= WinUsbDeviceCountChanged;
 
             // Clean up
             Settings.Default.Save();
@@ -177,95 +151,9 @@ namespace RB4InstrumentMapper
             VigemClient.Dispose();
         }
 
-        /// <summary>
-        /// Populates the Pcap device combo.
-        /// </summary>
-        /// <remarks>
-        /// Used both when initializing, and when refreshing.
-        /// </remarks>
-        private void PopulatePcapDropdown()
-        {
-            // Clear combo list
-            pcapDeviceCombo.Items.Clear();
-
-            // Skip everything else if disabled
-            if (!Settings.Default.pcapEnabled)
-            {
-                SetStartButtonState();
-                return;
-            }
-
-            // Refresh the device list
-            var pcapDeviceList = CaptureDeviceList.Instance;
-            pcapDeviceList.Refresh();
-            if (pcapDeviceList.Count == 0)
-            {
-                Console.WriteLine("No Pcap devices found!");
-                return;
-            }
-
-            // Load saved device name
-            string currentPcapSelection = Settings.Default.pcapDevice;
-
-            // Populate combo and print the list
-            for (int i = 0; i < pcapDeviceList.Count; i++)
-            {
-                var device = pcapDeviceList[i];
-                string itemNumber = $"{i + 1}";
-
-                string deviceName = $"{itemNumber}. {device.GetDisplayName()}";
-                string itemName = pcapComboBoxPrefix + itemNumber;
-                bool isSelected = device.Name == currentPcapSelection || device.Name == pcapSelectedDevice?.Name;
-
-                if (isSelected || (string.IsNullOrEmpty(currentPcapSelection) && device.IsXboxOneReceiver()))
-                {
-                    pcapSelectedDevice = device;
-                    isSelected = true;
-                }
-
-                pcapDeviceCombo.Items.Add(new ComboBoxItem()
-                {
-                    Name = itemName,
-                    Content = deviceName,
-                    IsEnabled = true,
-                    IsSelected = isSelected
-                });
-            }
-
-            if (firstPcapRefresh && pcapSelectedDevice == null)
-            {
-                pcapDeviceCombo.SelectedIndex = -1;
-                Console.WriteLine("No Xbox controller receivers detected! Please ensure you have one connected, and that you are using WinPcap and not Npcap.");
-                Console.WriteLine("You may need to run through auto-detection or manually select the device from the dropdown as well.");
-            }
-
-            int count = pcapDeviceList.Count;
-            if (count == 1)
-                Console.WriteLine("Discovered 1 Pcap device.");
-            else
-                Console.WriteLine($"Discovered {pcapDeviceList.Count} Pcap devices.");
-
-            SetStartButtonState();
-
-            firstPcapRefresh = false;
-        }
-
         private void SetStartButtonState()
         {
             bool startEnabled = true;
-
-            // At least one backend must be enabled
-            bool backendEnabled = Settings.Default.usbEnabled || Settings.Default.pcapEnabled;
-            usbEnabledCheckBox.FontWeight = !backendEnabled && usbEnabledCheckBox.IsEnabled ? FontWeights.Bold : FontWeights.Normal;
-            pcapEnabledCheckBox.FontWeight = !backendEnabled && pcapEnabledCheckBox.IsEnabled ? FontWeights.Bold : FontWeights.Normal;
-            startEnabled &= backendEnabled;
-
-            // If Pcap is enabled, a capture device must be selected
-            // If USB is also enabled, this condition is ignored
-            bool pcapDeviceRequired = Settings.Default.pcapEnabled && !Settings.Default.usbEnabled
-                && pcapDeviceCombo.SelectedIndex == -1;
-            pcapDeviceLabel.FontWeight = pcapDeviceRequired && pcapDeviceLabel.IsEnabled ? FontWeights.Bold : FontWeights.Normal;
-            startEnabled &= !pcapDeviceRequired;
 
             // Emulation type must be selected
             bool emulationTypeSelected = BackendSettings.MapperMode != MappingMode.NotSet;
@@ -279,21 +167,18 @@ namespace RB4InstrumentMapper
             // Display a message explaining the current start button state
             if (startEnabled)
                 startStatusLabel.Content = "Ready to run!";
-            else if (!backendEnabled)
-                startStatusLabel.Content = "Please enable Pcap or USB.";
-            else if (pcapDeviceRequired)
-                startStatusLabel.Content = "Please select a Pcap device.";
             else if (!emulationTypeSelected)
                 startStatusLabel.Content = "Please select a controller emulation mode.";
         }
 
-        private void WinUsbDeviceAddedOrRemoved()
+        private void GameInputDeviceCountChanged()
         {
-            uiDispatcher.Invoke(() =>
-            {
-                SetStartButtonState();
-                usbDeviceCountLabel.Content = $"Count: {WinUsbBackend.DeviceCount}";
-            });
+            uiDispatcher.Invoke(() => gameInputDeviceCountLabel.Content = $"Count: {GameInputBackend.DeviceCount}");
+        }
+
+        private void WinUsbDeviceCountChanged()
+        {
+            uiDispatcher.Invoke(() => usbDeviceCountLabel.Content = $"Count: {WinUsbBackend.DeviceCount}");
         }
 
         /// <summary>
@@ -301,22 +186,14 @@ namespace RB4InstrumentMapper
         /// </summary>
         private async void StartCapture()
         {
-            if (!StartPcapCapture() || !await StartWinUsbCapture())
-            {
-                StopPcapCapture();
-                await StopWinUsbCapture();
-                return;
-            }
+            if (Settings.Default.usbEnabled)
+                await WinUsbBackend.StartCapture();
+            GameInputBackend.StartCapture();
 
             // Enable packet capture active flag
             packetCaptureActive = true;
 
             // Set window controls
-            pcapEnabledCheckBox.IsEnabled = false;
-            pcapDeviceCombo.IsEnabled = false;
-            pcapAutoDetectButton.IsEnabled = false;
-            pcapRefreshButton.IsEnabled = false;
-
             usbEnabledCheckBox.IsEnabled = false;
             usbConfigureDevicesButton.IsEnabled = false;
 
@@ -341,19 +218,14 @@ namespace RB4InstrumentMapper
             }
         }
 
-        private void OnCaptureStopped()
-        {
-            PcapBackend.OnCaptureStop -= OnCaptureStopped;
-            uiDispatcher.Invoke(StopCapture);
-        }
-
         /// <summary>
         /// Stops packet capture/mapping and resets Pcap/controller objects.
         /// </summary>
         private async void StopCapture()
         {
-            StopPcapCapture();
-            await StopWinUsbCapture();
+            if (Settings.Default.usbEnabled)
+                await WinUsbBackend.StopCapture();
+            GameInputBackend.StopCapture();
 
             // Store whether or not the packet log was created
             bool doPacketLogMessage = Logging.PacketLogExists;
@@ -364,9 +236,7 @@ namespace RB4InstrumentMapper
             packetCaptureActive = false;
 
             // Set window controls
-            pcapEnabledCheckBox.IsEnabled = true;
             usbEnabledCheckBox.IsEnabled = true;
-            SetPcapEnabled(Settings.Default.pcapEnabled);
             SetUsbEnabled(Settings.Default.usbEnabled);
 
             packetDebugCheckBox.IsEnabled = true;
@@ -387,98 +257,6 @@ namespace RB4InstrumentMapper
             }
         }
 
-        private bool StartPcapCapture()
-        {
-            // Ignore if disabled or no device is selected
-            if (!Settings.Default.pcapEnabled || pcapSelectedDevice == null)
-                return true;
-
-            // Check if the device is still present
-            var pcapDeviceList = CaptureDeviceList.Instance;
-            pcapDeviceList.Refresh();
-            bool deviceStillPresent = false;
-            foreach (var device in pcapDeviceList)
-            {
-                if (device.Name == pcapSelectedDevice.Name)
-                {
-                    deviceStillPresent = true;
-                    break;
-                }
-            }
-
-            if (!deviceStillPresent)
-            {
-                // Invalidate selected device (but not the saved preference)
-                pcapSelectedDevice = null;
-
-                // Notify user
-                MessageBox.Show(
-                    "Pcap device list has changed and the selected device is no longer present.\nPlease re-select your device from the list and try again.",
-                    "Pcap Device Not Found",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Exclamation
-                );
-
-                // Force a refresh
-                PopulatePcapDropdown();
-                return false;
-            }
-
-            // Start capture
-            PcapBackend.OnCaptureStop += OnCaptureStopped;
-            PcapBackend.StartCapture(pcapSelectedDevice);
-            Console.WriteLine($"Listening on {pcapSelectedDevice.GetDisplayName()}...");
-
-            return true;
-        }
-
-        private async Task<bool> StartWinUsbCapture()
-        {
-            // Ignore if disabled
-            if (!Settings.Default.usbEnabled)
-                return true;
-
-            await WinUsbBackend.StartCapture();
-            return true;
-        }
-
-        private void StopPcapCapture()
-        {
-            // Ignore if disabled or no device is selected
-            if (!Settings.Default.pcapEnabled || pcapSelectedDevice == null)
-                return;
-
-            PcapBackend.StopCapture();
-        }
-
-        private async Task StopWinUsbCapture()
-        {
-            // Ignore if disabled
-            if (!Settings.Default.usbEnabled)
-                return;
-
-            await WinUsbBackend.StopCapture();
-        }
-
-        private void SetPcapEnabled(bool enabled)
-        {
-            if (pcapEnabledCheckBox.IsChecked != enabled)
-            {
-                // Let the event handler set everything
-                pcapEnabledCheckBox.IsChecked = enabled;
-                return;
-            }
-
-            Settings.Default.pcapEnabled = enabled;
-
-            pcapDeviceLabel.IsEnabled = enabled;
-            pcapDeviceCombo.IsEnabled = enabled;
-            pcapAutoDetectButton.IsEnabled = enabled;
-            pcapRefreshButton.IsEnabled = enabled;
-
-            PopulatePcapDropdown();
-        }
-
         private void SetUsbEnabled(bool enabled)
         {
             if (usbEnabledCheckBox.IsChecked != enabled)
@@ -496,17 +274,16 @@ namespace RB4InstrumentMapper
             {
                 if (enabled)
                 {
-                    WinUsbBackend.DeviceAddedOrRemoved += WinUsbDeviceAddedOrRemoved;
+                    WinUsbBackend.DeviceCountChanged += WinUsbDeviceCountChanged;
                     WinUsbBackend.Initialize();
                 }
                 else
                 {
                     WinUsbBackend.Uninitialize();
-                    WinUsbBackend.DeviceAddedOrRemoved -= WinUsbDeviceAddedOrRemoved;
+                    WinUsbBackend.DeviceCountChanged -= WinUsbDeviceCountChanged;
                 }
             }
 
-            usbDeviceCountLabel.Content = $"Count: {WinUsbBackend.DeviceCount}";
             SetStartButtonState();
         }
 
@@ -623,41 +400,6 @@ namespace RB4InstrumentMapper
         }
 
         /// <summary>
-        /// Handles Pcap device selection changes.
-        /// </summary>
-        private void pcapDeviceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Get selected combo box item
-            if (!(pcapDeviceCombo.SelectedItem is ComboBoxItem selection))
-            {
-                // Disable start button
-                SetStartButtonState();
-
-                // Clear saved device
-                Settings.Default.pcapDevice = String.Empty;
-                return;
-            }
-            string itemName = selection.Name;
-
-            // Get index of selected Pcap device
-            if (int.TryParse(itemName.Substring(pcapComboBoxPrefix.Length), out int pcapDeviceIndex))
-            {
-                // Adjust index count (UI->Logical)
-                pcapDeviceIndex -= 1;
-
-                // Assign device
-                pcapSelectedDevice = CaptureDeviceList.Instance[pcapDeviceIndex];
-                Console.WriteLine($"Selected Pcap device {pcapSelectedDevice.GetDisplayName()}");
-
-                // Enable start button
-                SetStartButtonState();
-
-                // Remember selected Pcap device's name
-                Settings.Default.pcapDevice = pcapSelectedDevice.Name;
-            }
-        }
-
-        /// <summary>
         /// Handles the click of the Start button.
         /// </summary>
         private void startButton_Click(object sender, RoutedEventArgs e)
@@ -670,15 +412,6 @@ namespace RB4InstrumentMapper
             {
                 StopCapture();
             }
-        }
-
-        /// <summary>
-        /// Handles the verbose error checkbox being checked.
-        /// </summary>
-        private void pcapEnabledCheckBox_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            bool pcapEnabled = pcapEnabledCheckBox.IsChecked.GetValueOrDefault();
-            SetPcapEnabled(pcapEnabled);
         }
 
         /// <summary>
@@ -718,12 +451,12 @@ namespace RB4InstrumentMapper
         }
 
         /// <summary>
-        /// Handles the click of the Pcap Refresh button.
+        /// Handles the click of the GameInput Refresh button.
         /// </summary>
-        private void pcapRefreshButton_Click(object sender, RoutedEventArgs e)
+        private void gameInputRefreshButton_Click(object sender, RoutedEventArgs e)
         {
             // Re-populate dropdown
-            PopulatePcapDropdown();
+            // PopulatePcapDropdown();
         }
 
         /// <summary>
@@ -741,148 +474,6 @@ namespace RB4InstrumentMapper
         {
             var window = new UsbDeviceListWindow();
             window.ShowDialog();
-        }
-
-        /// <summary>
-        /// Handles the Pcap auto-detect button being clicked.
-        /// </summary>
-        private void pcapAutoDetectButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBoxResult result;
-
-            // Refresh and check for Xbox One receivers
-            var pcapDeviceList = CaptureDeviceList.Instance;
-            pcapDeviceList.Refresh();
-            bool foundDevice = false;
-            foreach (var device in pcapDeviceList)
-            {
-                if (!device.IsXboxOneReceiver())
-                {
-                    continue;
-                }
-
-                foundDevice = true;
-                result = MessageBox.Show(
-                    $"Found Xbox One receiver device: {device.GetDisplayName()}\nPress OK to set this device as your selected Pcap device, or press Cancel to continue with the auto-detection process.",
-                    "Auto-Detect Receiver",
-                    MessageBoxButton.OKCancel
-                );
-                if (result == MessageBoxResult.OK)
-                {
-                    // Assign the new device
-                    pcapSelectedDevice = device;
-
-                    // Remember the new device
-                    Settings.Default.pcapDevice = pcapSelectedDevice.Name;
-
-                    // Refresh the dropdown
-                    PopulatePcapDropdown();
-                    return;
-                }
-                else
-                {
-                    continue;
-                }
-            }
-
-            if (!foundDevice)
-            {
-                result = MessageBox.Show(
-                    "No Xbox One receivers could be found through checking device \nYou will now be guided through a second auto-detection process. Press Cancel at any time to cancel the process.",
-                    "Auto-Detect Receiver",
-                    MessageBoxButton.OKCancel
-                );
-                if (result == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
-            }
-
-            // Prompt user to unplug their receiver
-            result = MessageBox.Show(
-                "Unplug your receiver, then click OK.",
-                "Auto-Detect Receiver",
-                MessageBoxButton.OKCancel
-            );
-            if (result == MessageBoxResult.Cancel)
-            {
-                return;
-            }
-
-            // Get the list of devices for when receiver is unplugged
-            var notPlugged = CaptureDeviceList.New();
-
-            // Prompt user to plug in their receiver
-            result = MessageBox.Show(
-                "Now plug in your receiver, wait a bit for it to register, then click OK.",
-                "Auto-Detect Receiver",
-                MessageBoxButton.OKCancel
-            );
-            if (result == MessageBoxResult.Cancel)
-            {
-                return;
-            }
-
-            // Get the list of devices for when receiver is plugged in
-            var plugged = CaptureDeviceList.New();
-
-            // Get device names for both not plugged and plugged lists
-            var notPluggedNames = new List<string>();
-            var pluggedNames = new List<string>();
-            foreach (var oldDevice in notPlugged)
-            {
-                notPluggedNames.Add(oldDevice.Name);
-            }
-            foreach (var newDevice in plugged)
-            {
-                pluggedNames.Add(newDevice.Name);
-            }
-
-            // Compare the lists and find what notPlugged doesn't contain
-            var newNames = new List<string>();
-            foreach (string pluggedName in pluggedNames)
-            {
-                if (!notPluggedNames.Contains(pluggedName))
-                {
-                    newNames.Add(pluggedName);
-                }
-            }
-
-            // Create a list of new devices based on the list of new device names
-            var newDevices = new List<ILiveDevice>();
-            foreach (var newDevice in plugged)
-            {
-                if (newNames.Contains(newDevice.Name))
-                {
-                    newDevices.Add(newDevice);
-                }
-            }
-
-            // If there's (strictly) one new device, assign it
-            if (newDevices.Count == 1)
-            {
-                // Assign the new device
-                pcapSelectedDevice = newDevices.First();
-
-                // Remember the new device
-                Settings.Default.pcapDevice = pcapSelectedDevice.Name;
-            }
-            else
-            {
-                // If there's more than one, don't auto-assign any of them
-                if (newDevices.Count > 1)
-                {
-                    MessageBox.Show("Could not auto-assign; more than one new device was detected.", "Auto-Detect Receiver", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                // If there's no new ones, don't do anything
-                else if (newDevices.Count == 0)
-                {
-                    MessageBox.Show("Could not auto-assign; no new devices were detected.", "Auto-Detect Receiver", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-
-            // Refresh the dropdown
-            PopulatePcapDropdown();
         }
     }
 }
