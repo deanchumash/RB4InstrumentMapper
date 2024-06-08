@@ -74,6 +74,34 @@ namespace RB4InstrumentMapper.Parsing
             Initialized = false;
         }
 
+        public static void Refresh()
+        {
+            deviceCallbackToken?.Unregister(1_000_000);
+            deviceCallbackToken = null;
+
+            foreach (var pair in devices)
+            {
+                pair.Key.Dispose();
+                pair.Value.Dispose();
+            }
+            devices.Clear();
+
+            if (!gameInput.RegisterDeviceCallback(
+                null,
+                GameInputKind.RawDeviceReport,
+                GameInputDeviceStatus.Connected,
+                GameInputEnumerationKind.AsyncEnumeration,
+                null,
+                OnDeviceStatusChange,
+                out deviceCallbackToken,
+                out int result
+            ))
+            {
+                PacketLogging.PrintMessage($"Failed to register GameInput device callback: 0x{result:X8}");
+                return;
+            }
+        }
+
         public static void StartCapture()
         {
             inputsEnabled = true;

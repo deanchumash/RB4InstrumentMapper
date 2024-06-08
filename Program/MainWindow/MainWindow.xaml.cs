@@ -455,8 +455,7 @@ namespace RB4InstrumentMapper
         /// </summary>
         private void gameInputRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            // Re-populate dropdown
-            // PopulatePcapDropdown();
+            GameInputBackend.Refresh();
         }
 
         /// <summary>
