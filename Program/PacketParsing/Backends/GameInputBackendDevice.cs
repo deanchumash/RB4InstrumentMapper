@@ -198,7 +198,10 @@ namespace RB4InstrumentMapper.Parsing
 
         public unsafe XboxResult SendMessage(XboxCommandHeader header, Span<byte> data)
         {
-            var xboxPacket = new XboxPacket(data, directionIn: false);
+            var xboxPacket = new XboxPacket(data, directionIn: false)
+            {
+                Header = new ReadOnlySpan<byte>(&header.CommandId, sizeof(byte))
+            };
             PacketLogging.LogPacket(xboxPacket);
 
             if (ioError)
