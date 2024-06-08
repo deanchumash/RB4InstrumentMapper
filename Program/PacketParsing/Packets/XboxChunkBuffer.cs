@@ -41,6 +41,14 @@ namespace RB4InstrumentMapper.Parsing
                 BytesUsed = 0;
             }
 
+            // Validate sequence alignment
+            if (bufferIndex != BytesUsed)
+            {
+                // We don't fail here since this seems to be a consistent issue on devices it affects
+                // Debug.Fail("Invalid chunk sequence ordering! Buffer index is not aligned with the previous chunk");
+                return XboxResult.InvalidMessage;
+            }
+
             // Buffer index equalling buffer length signals the end of the sequence
             if (bufferIndex >= Buffer.Length)
             {

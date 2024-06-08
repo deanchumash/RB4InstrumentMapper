@@ -37,7 +37,7 @@ namespace RB4InstrumentMapper.Parsing
 
         private DeviceMapper deviceMapper;
 
-        private bool receivedFirstMessage;
+        private int descriptorFailCount = 0;
 
         private readonly Dictionary<byte, byte> previousReceiveSequence = new Dictionary<byte, byte>();
         private readonly Dictionary<byte, byte> previousSendSequence = new Dictionary<byte, byte>();
@@ -87,7 +87,22 @@ namespace RB4InstrumentMapper.Parsing
                         case XboxResult.Success:
                             break;
                         case XboxResult.Pending: // Chunk is unfinished
+                            return chunkResult;
                         default: // Error handling the chunk
+                            // Hack for descriptor read errors
+                            if (header.CommandId == XboxDescriptor.CommandId)
+                            {
+                                descriptorFailCount++;
+                                if (descriptorFailCount >= 3)
+                                {
+                                    // Disconnect device after too many failed descriptors
+                                    return XboxResult.UnsupportedDevice;
+                                }
+
+                                var resendResult = SendMessage(XboxDescriptor.GetDescriptor);
+                                if (resendResult != XboxResult.Success)
+                                    return resendResult;
+                            }
                             return chunkResult;
                     }
                 }
@@ -110,12 +125,9 @@ namespace RB4InstrumentMapper.Parsing
             previousReceiveSequence[header.CommandId] = header.SequenceCount;
 
             // Handle packet
-            var result = (header.Flags & XboxCommandFlags.SystemCommand) != 0
+            return (header.Flags & XboxCommandFlags.SystemCommand) != 0
                 ? HandleSystemCommand(header.CommandId, commandData)
                 : HandleMapperCommand(header.CommandId, commandData);
-
-            receivedFirstMessage = true;
-            return result;
         }
 
         private XboxResult HandleSystemCommand(byte commandId, ReadOnlySpan<byte> commandData)
@@ -165,16 +177,8 @@ namespace RB4InstrumentMapper.Parsing
         /// </summary>
         private unsafe XboxResult HandleArrival(ReadOnlySpan<byte> data)
         {
-            if (Arrival.SerialNumber != 0)
-                return XboxResult.Success;
-
             if (!ParsingUtils.TryRead(data, out XboxArrival arrival))
                 return XboxResult.InvalidMessage;
-
-            // If we didn't receive the arrival as the first message, the device was likely reconnected
-            // This happens when removing the batteries to turn off wireless controllers
-            if (receivedFirstMessage)
-                return XboxResult.Reconnected;
 
             PacketLogging.PrintVerbose($"New client connected with ID {arrival.SerialNumber:X12}");
             Arrival = arrival;
@@ -202,9 +206,6 @@ namespace RB4InstrumentMapper.Parsing
         /// </summary>
         private XboxResult HandleDescriptor(ReadOnlySpan<byte> data)
         {
-            if (Descriptor != null)
-                return XboxResult.Success;
-
             if (!XboxDescriptor.Parse(data, out var descriptor))
                 return XboxResult.InvalidMessage;
 
