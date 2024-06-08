@@ -201,9 +201,6 @@ namespace RB4InstrumentMapper.Parsing
                 (c) => new GamepadVigemMapper(c)
             );
 #else
-            // Don't log a message if connected over Pcap, as they're most likely not trying to use it with the program
-            if (client.Parent.Backend == BackendType.Usb)
-                PacketLogging.PrintMessage("Warning: Gamepads are not supported in RB4InstrumentMapper, as Windows already supports them.");
             return null;
 #endif
         }
