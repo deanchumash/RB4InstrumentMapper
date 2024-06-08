@@ -1,4 +1,4 @@
-﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
   xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
 
   <Package
@@ -55,17 +55,14 @@
       <Component Id="COMP_NefariusViGEmClientdll" Guid="04BB3091-EA32-4F10-8F2B-7BA22FF8309A">
         <File Id="FILE_NefariusViGEmClientdll" Name="Nefarius.ViGEm.Client.dll" Source="$(var.BinariesDir)Nefarius.ViGEm.Client.dll" KeyPath="yes" />
       </Component>
-      <Component Id="COMP_PacketDotNetdll" Guid="BA4A1B0F-9DE7-47C5-8F00-8C246EACFE03">
-        <File Id="FILE_PacketDotNetdll" Name="PacketDotNet.dll" Source="$(var.BinariesDir)PacketDotNet.dll" KeyPath="yes" />
-      </Component>
       <Component Id="COMP_RB4InstrumentMapperexe" Guid="4D1C894A-DA1B-4C6F-AB06-0A89DE716835">
         <File Id="FILE_RB4InstrumentMapperexe" Name="RB4InstrumentMapper.exe" Source="$(var.BinariesDir)RB4InstrumentMapper.exe" KeyPath="yes" />
       </Component>
       <Component Id="COMP_RB4InstrumentMapperexeconfig" Guid="5DB2E840-D3B5-4B9D-AEF9-523A8C8CD09C">
         <File Id="FILE_RB4InstrumentMapperexeconfig" Name="RB4InstrumentMapper.exe.config" Source="$(var.BinariesDir)RB4InstrumentMapper.exe.config" KeyPath="yes" />
       </Component>
-      <Component Id="COMP_SharpPcapdll" Guid="C0C8FEE8-8DD2-4CB4-B6E1-4EACE930B682">
-        <File Id="FILE_SharpPcapdll" Name="SharpPcap.dll" Source="$(var.BinariesDir)SharpPcap.dll" KeyPath="yes" />
+      <Component Id="COMP_SharpGameInputdll" Guid="90B09275-A87E-4159-BBBC-6C9D13FA4281">
+        <File Id="FILE_SharpGameInputdll" Name="SharpGameInput.dll" Source="$(var.BinariesDir)SharpGameInput.dll" KeyPath="yes" />
       </Component>
       <Component Id="COMP_SystemBuffersdll" Guid="7F40011E-7E13-4756-AB3D-C8805C1014E9">
         <File Id="FILE_SystemBuffersdll" Name="System.Buffers.dll" Source="$(var.BinariesDir)System.Buffers.dll" KeyPath="yes" />
