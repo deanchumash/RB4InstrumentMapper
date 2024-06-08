@@ -13,14 +13,11 @@ namespace RB4InstrumentMapper.Parsing
         private IGameInput gameInput;
         private IGameInputDevice device;
 
-        private DeviceMapper deviceMapper;
-        private volatile bool inputsEnabled = false;
-
-        private GameInputCallbackToken readingToken;
-
         private Thread readThread;
-        private EventWaitHandle threadStop;
+        private EventWaitHandle threadStop = new EventWaitHandle(false, EventResetMode.ManualReset);
         private volatile bool ioError = false;
+
+        private bool inputsEnabled = false;
 
         public ushort VendorId { get; }
         public ushort ProductId { get; }
@@ -37,33 +34,13 @@ namespace RB4InstrumentMapper.Parsing
             ref readonly var info = ref device.DeviceInfo;
             VendorId = info.vendorId;
             ProductId = info.productId;
-
-            if (!gameInput.RegisterReadingCallback(
-                device,
-                GameInputKind.RawDeviceReport,
-                0,
-                null,
-                OnDeviceReading,
-                out readingToken,
-                out int result
-            ))
-            {
-                // RegisterReadingCallback is not implemented at the time of writing,
-                // so we fall back to polling as a stopgap until it is implemented
-                if (result != E_NOTIMPL)
-                    PacketLogging.PrintMessage($"Couldn't register reading callback, falling back to manual polling. Error result: 0x{result:X4}");
-                threadStop = new EventWaitHandle(false, EventResetMode.ManualReset);
-                readThread = new Thread(ReadThread) { IsBackground = true };
-                readThread.Start();
-            }
         }
 
         // No finalizer, all resources are managed
 
         public void Dispose()
         {
-            readingToken?.Unregister(5000);
-            readingToken = null;
+            inputsEnabled = false;
 
             threadStop?.Set();
             readThread?.Join();
@@ -71,9 +48,6 @@ namespace RB4InstrumentMapper.Parsing
 
             threadStop?.Dispose();
             threadStop = null;
-
-            deviceMapper?.Dispose();
-            deviceMapper = null;
 
             device?.Dispose();
             device = null;
@@ -84,25 +58,59 @@ namespace RB4InstrumentMapper.Parsing
 
         public void EnableInputs(bool enabled)
         {
-            // Defer to read thread/callback
-            inputsEnabled = enabled;
-        }
+            if (inputsEnabled == enabled)
+                return;
 
-        private void OnDeviceReading(
-            LightGameInputCallbackToken callbackToken,
-            object context,
-            LightIGameInputReading reading,
-            bool hasOverrunOccurred
-        )
-        {
-            using (reading)
+            inputsEnabled = enabled;
+            if (enabled)
             {
-                if (!HandleReading(reading))
-                    callbackToken.Stop();
+                threadStop.Reset();
+                readThread = new Thread(ReadThread) { IsBackground = true };
+                readThread.Start();
+            }
+            else
+            {
+                threadStop.Set();
+                readThread.Join();
             }
         }
 
         private unsafe void ReadThread()
+        {
+            using var deviceMapper = MapperFactory.GetByHardwareIds(this);
+            if (deviceMapper == null)
+            {
+                GameInputBackend.QueueForRemoval(this);
+                return;
+            }
+
+            if (gameInput.RegisterReadingCallback(
+                device, GameInputKind.RawDeviceReport, 0, null,
+                (token, context, reading, hasOverrunOccurred) =>
+                {
+                    using (reading)
+                    {
+                        if (!HandleReading(reading, deviceMapper))
+                            token.Stop();
+                    }
+                },
+                out var readingToken, out int result
+            ))
+            {
+                threadStop.WaitOne(Timeout.Infinite);
+                readingToken.Unregister(1000000);
+            }
+            else
+            {
+                // RegisterReadingCallback is not implemented at the time of writing,
+                // so we fall back to polling on failure
+                if (result != E_NOTIMPL)
+                    PacketLogging.PrintMessage($"Couldn't register reading callback, falling back to manual polling. Error result: 0x{result:X4}");
+                ReadThreaded(deviceMapper);
+            }
+        }
+
+        private unsafe void ReadThreaded(DeviceMapper mapper)
         {
             ulong lastTimestamp = 0;
             while (!threadStop.WaitOne(0))
@@ -126,34 +134,14 @@ namespace RB4InstrumentMapper.Parsing
                         continue;
                     lastTimestamp = timestamp;
 
-                    if (!HandleReading(reading))
+                    if (!HandleReading(reading, mapper))
                         break;
                 }
             }
         }
 
-        private unsafe bool HandleReading(LightIGameInputReading reading)
+        private unsafe bool HandleReading(LightIGameInputReading reading, DeviceMapper mapper)
         {
-            bool enabled = inputsEnabled;
-            if (enabled != (deviceMapper != null))
-            {
-                deviceMapper?.Dispose();
-                deviceMapper = null;
-
-                if (enabled)
-                {
-                    deviceMapper = MapperFactory.GetByHardwareIds(this);
-                    if (deviceMapper == null)
-                    {
-                        GameInputBackend.QueueForRemoval(this);
-                        return false;
-                    }
-                }
-            }
-
-            if (!enabled)
-                return true;
-
             if (!reading.GetRawReport(out var rawReport))
             {
                 PacketLogging.PrintVerbose("Could not get raw report!");
@@ -162,7 +150,7 @@ namespace RB4InstrumentMapper.Parsing
 
             using (rawReport)
             {
-                uint reportId = rawReport.ReportInfo.id;
+                byte reportId = (byte)rawReport.ReportInfo.id;
                 UIntPtr size = rawReport.GetRawDataSize();
 
                 byte* buffer = stackalloc byte[(int)size];
@@ -170,10 +158,13 @@ namespace RB4InstrumentMapper.Parsing
                 Debug.Assert(size == readSize);
 
                 var data = new ReadOnlySpan<byte>(buffer, (int)size);
-                var packet = new XboxPacket(data, directionIn: true);
+                var packet = new XboxPacket(data, directionIn: true)
+                {
+                    Header = new ReadOnlySpan<byte>(&reportId, sizeof(byte))
+                };
                 PacketLogging.LogPacket(packet);
 
-                var result = deviceMapper.HandleMessage((byte)reportId, data);
+                var result = mapper.HandleMessage(reportId, data);
                 if (result == XboxResult.Disconnected)
                     return false;
             }
