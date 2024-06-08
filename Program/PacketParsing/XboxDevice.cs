@@ -224,6 +224,8 @@ namespace RB4InstrumentMapper.Parsing
             {
                 client.Dispose();
             }
+
+            clients.Clear();
         }
     }
 }

@@ -105,7 +105,7 @@ namespace RB4InstrumentMapper.Parsing
 
             ioError = false;
             readPackets = true;
-            readThread = new Thread(ReadThread);
+            readThread = new Thread(ReadThread) { IsBackground = true };
             readThread.Start();
         }
 

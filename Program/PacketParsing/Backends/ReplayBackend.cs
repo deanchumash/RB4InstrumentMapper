@@ -44,7 +44,6 @@ namespace RB4InstrumentMapper.Parsing
 
             string[] lines = File.ReadAllLines(logPath);
             var device = new XboxDevice(BackendType.Replay);
-            device.EnableInputs(true);
             foreach (string line in lines)
             {
                 // Stop if the device has been removed
