@@ -106,17 +106,27 @@ namespace RB4InstrumentMapper.Parsing
         public static Task StartCapture()
         {
             inputsEnabled = true;
-            PacketLogging.PrintMessage("Rebooting USB devices to ensure proper startup. Hang tight...");
-            PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
-            return Task.Run(ResetDevices);
+            if (!devices.IsEmpty)
+            {
+                PacketLogging.PrintMessage("Rebooting USB devices to ensure proper startup. Hang tight...");
+                PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+                return Task.Run(ResetDevices);
+            }
+
+            return Task.CompletedTask;
         }
 
         public static Task StopCapture()
         {
             inputsEnabled = false;
-            PacketLogging.PrintMessage("Rebooting USB devices to refresh them after mapping...");
-            PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
-            return Task.Run(ResetDevices);
+            if (!devices.IsEmpty)
+            {
+                PacketLogging.PrintMessage("Rebooting USB devices to refresh them after mapping...");
+                PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+                return Task.Run(ResetDevices);
+            }
+
+            return Task.CompletedTask;
         }
 
         // WinUSB devices are exclusive-access, so we need a helper method to get already-initialized devices
