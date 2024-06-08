@@ -118,7 +118,7 @@ namespace RB4InstrumentMapper.Parsing
             ref readonly var info = ref device.DeviceInfo;
 
             // We only cover Xbox One devices
-            if (info.deviceFamily != GameInputDeviceFamily.XboxOne)
+            if (info.deviceFamily != GameInputDeviceFamily.XboxOne && info.deviceFamily != GameInputDeviceFamily.Virtual)
                 return;
 
             // We only support devices with raw reports
@@ -130,7 +130,7 @@ namespace RB4InstrumentMapper.Parsing
                 if (!MapperFactory.IsSupportedByHardwareIds(info.vendorId, info.productId))
                     return;
 
-                var permaDevice = device.ToSafeHandle();
+                var permaDevice = device.ToComPtr();
                 var backendDevice = new GameInputBackendDevice(gameInput, permaDevice);
                 backendDevice.EnableInputs(inputsEnabled);
 
@@ -142,7 +142,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             else
             {
-                if (!devices.TryRemove(device.ToSafeHandle(), out var backendDevice))
+                if (!devices.TryRemove(device.ToComPtr(), out var backendDevice))
                     return;
 
                 backendDevice.Dispose();
