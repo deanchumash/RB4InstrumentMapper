@@ -49,6 +49,7 @@ namespace RB4InstrumentMapper.Parsing
                 return;
             }
 
+            Initialized = true;
             PacketLogging.PrintMessage("Initialized GameInput backend.");
         }
 
@@ -69,6 +70,8 @@ namespace RB4InstrumentMapper.Parsing
 
             gameInput?.Dispose();
             gameInput = null;
+
+            Initialized = false;
         }
 
         public static void StartCapture()
