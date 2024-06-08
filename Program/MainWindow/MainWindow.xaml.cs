@@ -471,8 +471,16 @@ namespace RB4InstrumentMapper
         /// </summary>
         private void usbConfigureDevicesButton_Click(object sender, RoutedEventArgs e)
         {
+            // Disable GameInput to prevent weird issues
+            // Otherwise, devices switched over aren't disconnected on the GameInput side,
+            // and devices reverted aren't picked up unless it's plugged in before RB4IM starts.
+            // Both require a restart of the PC or GameInput service to fix.
+            GameInputBackend.Uninitialize();
+
             var window = new UsbDeviceListWindow();
             window.ShowDialog();
+
+            GameInputBackend.Initialize();
         }
     }
 }

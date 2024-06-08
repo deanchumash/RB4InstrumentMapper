@@ -50,7 +50,6 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             Initialized = true;
-            PacketLogging.PrintMessage("Initialized GameInput backend.");
         }
 
         public static void Uninitialize()
