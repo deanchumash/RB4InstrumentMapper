@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
-    <Name>RB4InstrumentMapperInstaller</Name>
+    <Name>RB4InstrumentMapperPackage</Name>
 
     <!-- Allow same-version upgrades so we can do test builds without touching the actual version number
       ICE61: "This product should remove only older versions of itself. The Maximum version is not less than the current product." -->
@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.0" />
-    <ProjectReference Include="..\Program\RB4InstrumentMapper.csproj" SetConfiguration="Configuration=Release" />
+    <ProjectReference Include="..\..\Program\RB4InstrumentMapper.csproj" SetConfiguration="Configuration=Release" />
   </ItemGroup>
 
   <ItemGroup>

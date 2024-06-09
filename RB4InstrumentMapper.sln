@@ -5,10 +5,12 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RB4InstrumentMapper", "Program\RB4InstrumentMapper.csproj", "{93041197-1E1B-4084-B1DD-C8363A588C48}"
 EndProject
-Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "RB4InstrumentMapperInstaller", "Installer\RB4InstrumentMapperInstaller.wixproj", "{047562BB-6D63-4259-8E2E-0A5E834190B1}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "RB4InstrumentMapperInstaller", "Installer\InstallerBundle\RB4InstrumentMapperInstaller.wixproj", "{047562BB-6D63-4259-8E2E-0A5E834190B1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{93041197-1E1B-4084-B1DD-C8363A588C48} = {93041197-1E1B-4084-B1DD-C8363A588C48}
 	EndProjectSection
+EndProject
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "RB4InstrumentMapperPackage", "Installer\ProgramPackage\RB4InstrumentMapperPackage.wixproj", "{89FEECD0-F61C-444F-8643-8821D909B210}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{047562BB-6D63-4259-8E2E-0A5E834190B1}.Debug|x64.Build.0 = Debug|x64
 		{047562BB-6D63-4259-8E2E-0A5E834190B1}.Release|x64.ActiveCfg = Release|x64
 		{047562BB-6D63-4259-8E2E-0A5E834190B1}.Release|x64.Build.0 = Release|x64
+		{89FEECD0-F61C-444F-8643-8821D909B210}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{89FEECD0-F61C-444F-8643-8821D909B210}.Debug|x64.Build.0 = Debug|Any CPU
+		{89FEECD0-F61C-444F-8643-8821D909B210}.Release|x64.ActiveCfg = Release|Any CPU
+		{89FEECD0-F61C-444F-8643-8821D909B210}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

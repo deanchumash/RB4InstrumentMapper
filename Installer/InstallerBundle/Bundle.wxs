@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+  xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+
+  <Bundle
+      Name="RB4InstrumentMapper"
+      Version="4.2.0.0"
+      Manufacturer="Andreas Schiffler"
+      UpgradeCode="94bef546-701f-4571-9828-d4fa39b2ea84"
+      DisableModify="yes">
+
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication
+          Theme="rtfLicense"
+          LicenseFile="$(ResourcesDir)license.rtf"
+          LogoFile="$(ResourcesDir)icon.ico"
+          SuppressOptionsUI="yes" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage
+          SourceFile="RB4InstrumentMapperPackage.msi"
+          Permanent="false" />
+      <MsiPackage
+          SourceFile="$(PkgMicrosoft_GameInput)\redist\GameInputRedist.msi"
+          Permanent="false"
+          ForcePerMachine="yes"
+          Vital="yes"
+          RepairCondition="true" />
+    </Chain>
+
+  </Bundle>
+
+</Wix>
