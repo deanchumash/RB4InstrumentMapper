@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -34,7 +34,7 @@
     <Content Include="Dependencies\x64\vJoyInterface.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
 
     <!-- Modified version of ViGEmBus, has fixes for unhandled/mishandled error codes -->
-    <Reference Include="Nefarius.ViGEm.Client, Version=1.21.258.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Nefarius.ViGEm.Client, Version=1.21.259.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>Dependencies\Nefarius.ViGEm.Client.dll</HintPath>
     </Reference>
 
