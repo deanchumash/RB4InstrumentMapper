@@ -221,31 +221,34 @@ namespace RB4InstrumentMapper.Parsing
                     continue;
                 }
 
-                fixed (byte* ptr = data)
+                using (report)
                 {
-                    if (!report.SetRawData((UIntPtr)data.Length, ptr))
+                    fixed (byte* ptr = data)
                     {
-                        PacketLogging.PrintVerbose("Failed to set raw report data!");
+                        if (!report.SetRawData((UIntPtr)data.Length, ptr))
+                        {
+                            PacketLogging.PrintVerbose("Failed to set raw report data!");
+                            continue;
+                        }
+                    }
+
+                    hResult = device.SendRawDeviceOutput(report);
+                    if (hResult < 0)
+                    {
+                        // This call is not implemented as of the time of writing,
+                        // ignore and treat as success
+                        if (hResult == E_NOTIMPL)
+                            return XboxResult.Success;
+
+                        if (hResult == (int)GameInputResult.DeviceDisconnected)
+                            return XboxResult.Disconnected;
+
+                        PacketLogging.PrintVerbose($"Failed to send raw report: 0x{hResult:X8}");
                         continue;
                     }
+
+                    return XboxResult.Success;
                 }
-
-                hResult = device.SendRawDeviceOutput(report);
-                if (hResult < 0)
-                {
-                    // This call is not implemented as of the time of writing,
-                    // and treat as success
-                    if (hResult == E_NOTIMPL)
-                        return XboxResult.Success;
-
-                    if (hResult == (int)GameInputResult.DeviceDisconnected)
-                        return XboxResult.Disconnected;
-
-                    PacketLogging.PrintVerbose($"Failed to send raw report: 0x{hResult:X8}");
-                    continue;
-                }
-
-                return XboxResult.Success;
             }
 
             ioError = true;
