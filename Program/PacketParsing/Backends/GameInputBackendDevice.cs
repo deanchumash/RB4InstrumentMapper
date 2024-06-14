@@ -17,6 +17,9 @@ namespace RB4InstrumentMapper.Parsing
         private EventWaitHandle threadStop = new EventWaitHandle(false, EventResetMode.ManualReset);
         private volatile bool ioError = false;
 
+        private byte[] lastReport = Array.Empty<byte>();
+        private int lastReportLength = 0;
+
         private bool inputsEnabled = false;
 
         public ushort VendorId { get; }
@@ -112,7 +115,9 @@ namespace RB4InstrumentMapper.Parsing
 
         private unsafe void ReadThreaded(DeviceMapper mapper)
         {
-            ulong lastTimestamp = 0;
+            // We unfortunately can't rely on timestamp to determine state change,
+            // as guitar axis changes do not change the timestamp
+            // ulong lastTimestamp = 0;
             while (!threadStop.WaitOne(0))
             {
                 int hResult = gameInput.GetCurrentReading(GameInputKind.RawDeviceReport, device, out var reading);
@@ -128,11 +133,11 @@ namespace RB4InstrumentMapper.Parsing
 
                 using (reading)
                 {
-                    // Ignore unchanged reports
-                    ulong timestamp = reading.GetTimestamp();
-                    if (lastTimestamp == timestamp)
-                        continue;
-                    lastTimestamp = timestamp;
+                    // // Ignore unchanged reports
+                    // ulong timestamp = reading.GetTimestamp();
+                    // if (lastTimestamp == timestamp)
+                    //     continue;
+                    // lastTimestamp = timestamp;
 
                     if (!HandleReading(reading, mapper))
                         break;
@@ -158,6 +163,16 @@ namespace RB4InstrumentMapper.Parsing
                 Debug.Assert(size == readSize);
 
                 var data = new ReadOnlySpan<byte>(buffer, (int)size);
+                // Compare with last report to determine if any inputs changed
+                // Necessary due to the timestamp not updating on guitar axis changes
+                if (data.SequenceEqual(lastReport.AsSpan(0, lastReportLength)))
+                    return true;
+
+                if (lastReport.Length < data.Length)
+                    lastReport = new byte[data.Length];
+                data.CopyTo(lastReport);
+                lastReportLength = data.Length;
+
                 var packet = new XboxPacket(data, directionIn: true)
                 {
                     Header = new ReadOnlySpan<byte>(&reportId, sizeof(byte))
