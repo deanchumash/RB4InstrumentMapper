@@ -71,9 +71,7 @@ namespace RB4InstrumentMapper.Parsing
             device.SetSliderValue(Xbox360Slider.LeftTrigger, report.LowerFretFlag ? byte.MaxValue : byte.MinValue);
 
             // Whammy
-            // Scaled to 0 - 32767 instead of -32768 - 32767 to prevent issues in RPCS3 if rebinding is needed,
-            // an axis being held will cause it to latch onto that axis for all rebind operations
-            device.SetAxisValue(Xbox360Axis.RightThumbX, report.WhammyBar.ScaleToInt16Positive());
+            device.SetAxisValue(Xbox360Axis.RightThumbX, report.WhammyBar.ScaleToInt16());
             // Tilt
             // Button instead of an axis
             // TODO: The threshold here should probably be configurable/calibratable
