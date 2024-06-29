@@ -75,6 +75,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static void Refresh()
         {
+            if (!Initialized)
+                return;
+
             deviceCallbackToken?.Unregister(1_000_000);
             deviceCallbackToken = null;
 
@@ -103,6 +106,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static void StartCapture()
         {
+            if (!Initialized)
+                return;
+
             inputsEnabled = true;
             foreach (var device in devices.Values)
             {
@@ -112,6 +118,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static void StopCapture()
         {
+            if (!Initialized)
+                return;
+
             inputsEnabled = false;
             foreach (var device in devices.Values)
             {

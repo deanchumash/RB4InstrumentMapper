@@ -124,8 +124,10 @@ namespace RB4InstrumentMapper
             SetDeviceType((ControllerType)Settings.Default.controllerDeviceType);
             SetUsbEnabled(Settings.Default.usbEnabled);
 
+            // Initialize GameInput
             GameInputBackend.DeviceCountChanged += GameInputDeviceCountChanged;
             GameInputBackend.Initialize();
+            SetGameInputInitialized(GameInputBackend.Initialized);
         }
 
         /// <summary>
@@ -255,6 +257,12 @@ namespace RB4InstrumentMapper
             {
                 Console.WriteLine($"Packet logs may be found in {Logging.PacketLogFolderPath}");
             }
+        }
+
+        private void SetGameInputInitialized(bool enabled)
+        {
+            gameInputDeviceCountLabel.IsEnabled = enabled;
+            gameInputRefreshButton.Content = enabled ? "Refresh" : "Initialize";
         }
 
         private void SetUsbEnabled(bool enabled)
@@ -455,7 +463,15 @@ namespace RB4InstrumentMapper
         /// </summary>
         private void gameInputRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            GameInputBackend.Refresh();
+            if (GameInputBackend.Initialized)
+            {
+                GameInputBackend.Refresh();
+            }
+            else
+            {
+                GameInputBackend.Initialize();
+                SetGameInputInitialized(GameInputBackend.Initialized);
+            }
         }
 
         /// <summary>
