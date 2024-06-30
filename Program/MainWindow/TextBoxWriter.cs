@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -15,80 +15,89 @@ namespace RB4InstrumentMapper
     /// </remarks>
     public class TextBoxWriter : TextWriter
     {
-        /// <summary>
-        /// Default maximum number of lines to keep in console.
-        /// </summary>
-        private const int DefaultMaxNumberLines = 100;
+        private const int MaxLines = 100;
 
-        /// <summary>
-        /// Line split characters.
-        /// </summary>
-        private static readonly char[] newlineChars = Environment.NewLine.ToCharArray();
+        private readonly object writeLock = new object();
+        private readonly StringBuilder currentLine = new StringBuilder();
+        private readonly Queue<string> visibleLines = new Queue<string>(MaxLines);
 
-        /// <summary>
-        /// Buffer for the current line.
-        /// </summary>
-        private readonly StringBuilder currentLineCache = new StringBuilder(250);
-
-        /// <summary>
-        /// Cache of the visible text.
-        /// </summary>
-        private readonly FixedSizeConcurrentQueue<string> visibleTextCache = new FixedSizeConcurrentQueue<string>(DefaultMaxNumberLines);
-
-        /// <summary>
-        /// Text box handle that displays text.
-        /// </summary>
         private readonly TextBox textBox;
-
-        /// <summary>
-        /// Delegate for updating the text box.
-        /// </summary>
         private readonly Action updateText;
+        private volatile bool updateQueued;
 
         public override Encoding Encoding => Encoding.Unicode;
 
-        /// <summary>
-        /// Creates a new TextBoxConsole.
-        /// </summary>
         public TextBoxWriter(TextBox output)
         {
             textBox = output;
-
-            updateText = new Action(UpdateText);
-        }
-
-        /// <summary>
-        /// Write text to outputter.
-        /// </summary>
-        public override void Write(char value)
-        {
-            base.Write(value);
-
-            if (!newlineChars.Contains(value))
-            {
-                // Collect characters in line
-                currentLineCache.Append(value);
-                return;
-            }
-
-            // Newline
-            // Ignore empty lines
-            if (currentLineCache.Length < 1)
-                return;
-
-            // Store line in text cache and flush it
-            string newText = currentLineCache.ToString();
-            currentLineCache.Clear();
-            visibleTextCache.Enqueue(newText);
-            textBox.Dispatcher.BeginInvoke(DispatcherPriority.Background, updateText);
+            updateText = UpdateText;
         }
 
         private void UpdateText()
         {
-            bool doScroll = Math.Abs(textBox.ExtentHeight - (textBox.VerticalOffset + textBox.ViewportHeight)) < (textBox.FontSize * 3);
-            textBox.Text = string.Join(Environment.NewLine, visibleTextCache.ToArray());
-            if (doScroll)
-                textBox.ScrollToEnd();
+            lock (writeLock)
+            {
+                bool doScroll = Math.Abs(textBox.ExtentHeight - (textBox.VerticalOffset + textBox.ViewportHeight)) < (textBox.FontSize * 3);
+                textBox.Text = string.Join(Environment.NewLine, visibleLines);
+                if (doScroll)
+                    textBox.ScrollToEnd();
+                updateQueued = false;
+            }
+        }
+
+        // Optimized path to avoid excess allocations and calls to Write(char)
+        public override void WriteLine(string value)
+        {
+            lock (writeLock)
+            {
+                currentLine.Append(value);
+                FlushLine();
+            }
+        }
+
+        public override void Write(char value)
+        {
+            lock (writeLock)
+            {
+                foreach (char c in CoreNewLine)
+                {
+                    if (value == c)
+                    {
+                        FlushLine();
+                        return;
+                    }
+                }
+
+                currentLine.Append(value);
+            }
+        }
+
+        public override void Flush()
+        {
+            lock (writeLock)
+            {
+                FlushLine();
+            }
+        }
+
+        private void FlushLine()
+        {
+            // Ignore empty lines or duplicate updates
+            if (currentLine.Length < 1)
+                return;
+
+            visibleLines.Enqueue(currentLine.ToString());
+            while (visibleLines.Count > MaxLines)
+                visibleLines.Dequeue();
+
+            currentLine.Clear();
+
+            // Don't queue multiple updates at once
+            if (!updateQueued)
+            {
+                textBox.Dispatcher.BeginInvoke(DispatcherPriority.Background, updateText);
+                updateQueued = true;
+            }
         }
     }
 }
