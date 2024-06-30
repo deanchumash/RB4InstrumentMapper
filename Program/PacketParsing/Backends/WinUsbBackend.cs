@@ -54,6 +54,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static void ResetDevices()
         {
+            if (!Initialized)
+                return;
+
             foreach (var devicePath in devices.Keys)
             {
                 RemoveDevice(devicePath, remove: false);
@@ -105,6 +108,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static Task StartCapture()
         {
+            if (!Initialized)
+                return Task.CompletedTask;
+
             inputsEnabled = true;
             if (!devices.IsEmpty)
             {
@@ -118,6 +124,9 @@ namespace RB4InstrumentMapper.Parsing
 
         public static Task StopCapture()
         {
+            if (!Initialized)
+                return Task.CompletedTask;
+
             inputsEnabled = false;
             if (!devices.IsEmpty)
             {

@@ -185,8 +185,7 @@ namespace RB4InstrumentMapper
         /// </summary>
         private async void StartCapture()
         {
-            if (Settings.Default.usbEnabled)
-                await WinUsbBackend.StartCapture();
+            await WinUsbBackend.StartCapture();
             GameInputBackend.StartCapture();
 
             // Enable packet capture active flag
@@ -222,8 +221,7 @@ namespace RB4InstrumentMapper
         /// </summary>
         private async void StopCapture()
         {
-            if (Settings.Default.usbEnabled)
-                await WinUsbBackend.StopCapture();
+            await WinUsbBackend.StopCapture();
             GameInputBackend.StopCapture();
 
             // Store whether or not the packet log was created
