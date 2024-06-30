@@ -29,7 +29,7 @@ namespace RB4InstrumentMapper.Parsing
 
             if (!GameInput.Create(out gameInput, out int result))
             {
-                PacketLogging.PrintMessage($"Failed to create GameInput instance: 0x{result:X8}");
+                Logging.WriteLine($"Failed to create GameInput instance: 0x{result:X8}");
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace RB4InstrumentMapper.Parsing
             ))
             {
                 gameInput?.Dispose();
-                PacketLogging.PrintMessage($"Failed to register GameInput device callback: 0x{result:X8}");
+                Logging.WriteLine($"Failed to register GameInput device callback: 0x{result:X8}");
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace RB4InstrumentMapper.Parsing
                 out int result
             ))
             {
-                PacketLogging.PrintMessage($"Failed to register GameInput device callback: 0x{result:X8}");
+                Logging.WriteLine($"Failed to register GameInput device callback: 0x{result:X8}");
                 return;
             }
         }
@@ -136,7 +136,7 @@ namespace RB4InstrumentMapper.Parsing
             if (!devices.TryRemove(device.Device, out _))
                 return;
 
-            PacketLogging.PrintMessage($"Removing GameInput device {DeviceInfoToString(device.Device.DeviceInfo)}");
+            Logging.WriteLine($"Removing GameInput device {DeviceInfoToString(device.Device.DeviceInfo)}");
             device.Dispose();
             DeviceCountChanged?.Invoke();
         }
@@ -175,7 +175,7 @@ namespace RB4InstrumentMapper.Parsing
 
                 if (devices.TryAdd(permaDevice, backendDevice))
                 {
-                    PacketLogging.PrintMessage($"GameInput device {DeviceInfoToString(info)} connected");
+                    Logging.WriteLine($"GameInput device {DeviceInfoToString(info)} connected");
                     DeviceCountChanged?.Invoke();
                 }
             }
@@ -185,7 +185,7 @@ namespace RB4InstrumentMapper.Parsing
                     return;
 
                 backendDevice.Dispose();
-                PacketLogging.PrintMessage($"GameInput device {DeviceInfoToString(info)} disconnected");
+                Logging.WriteLine($"GameInput device {DeviceInfoToString(info)} disconnected");
                 DeviceCountChanged?.Invoke();
             }
         }

@@ -70,11 +70,11 @@ namespace RB4InstrumentMapper.Parsing
                     if (conflictIgnoredIds.Contains(guid))
                         continue;
 
-                    PacketLogging.PrintMessage($"More than one recognized interface found! Cannot get specific mapper, device will not be mapped.");
-                    PacketLogging.PrintMessage($"Consider filing a GitHub issue with the GUIDs below if this device should be supported:");
+                    Logging.WriteLine($"More than one recognized interface found! Cannot get specific mapper, device will not be mapped.");
+                    Logging.WriteLine($"Consider filing a GitHub issue with the GUIDs below if this device should be supported:");
                     foreach (var guid2 in interfaceGuids)
                     {
-                        PacketLogging.PrintMessage($"- {guid2}");
+                        Logging.WriteLine($"- {guid2}");
                     }
                     return null;
                 }
@@ -84,11 +84,11 @@ namespace RB4InstrumentMapper.Parsing
 
             if (interfaceGuid == default)
             {
-                PacketLogging.PrintMessage($"Could not find any supported interface IDs! Device will not be mapped.");
-                PacketLogging.PrintMessage($"Consider filing a GitHub issue with the GUIDs below if this device should be supported:");
+                Logging.WriteLine($"Could not find any supported interface IDs! Device will not be mapped.");
+                Logging.WriteLine($"Consider filing a GitHub issue with the GUIDs below if this device should be supported:");
                 foreach (var guid2 in interfaceGuids)
                 {
-                    PacketLogging.PrintMessage($"- {guid2}");
+                    Logging.WriteLine($"- {guid2}");
                 }
                 return null;
             }
@@ -96,8 +96,8 @@ namespace RB4InstrumentMapper.Parsing
             // Get mapper creation delegate for interface GUID
             if (!interfaceGuidLookup.TryGetValue(interfaceGuid, out var func))
             {
-                PacketLogging.PrintMessage($"Could not get a specific mapper for interface {interfaceGuid}! Device will not be mapped.");
-                PacketLogging.PrintMessage($"Consider filing a GitHub issue with the GUID above if this device should be supported.");
+                Logging.WriteLine($"Could not get a specific mapper for interface {interfaceGuid}! Device will not be mapped.");
+                Logging.WriteLine($"Consider filing a GitHub issue with the GUID above if this device should be supported.");
                 return null;
             }
 
@@ -120,7 +120,7 @@ namespace RB4InstrumentMapper.Parsing
             {
                 // Verbose since hardware ID lookup is meant for GameInput,
                 // and we don't want to warn unnecessarily for devices that don't need to be handled
-                PacketLogging.PrintVerbose($"Device with hardware IDs {client.VendorId:X4}{client.ProductId:X4} is not recognized! Device will not be mapped.");
+                Logging.WriteLineVerbose($"Device with hardware IDs {client.VendorId:X4}{client.ProductId:X4} is not recognized! Device will not be mapped.");
                 return null;
             }
 
@@ -130,7 +130,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                PacketLogging.PrintException("Failed to create mapper for device!", ex);
+                Logging.WriteException("Failed to create mapper for device!", ex);
                 return null;
             }
         }
@@ -147,7 +147,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                PacketLogging.PrintException("Failed to create mapper for device!", ex);
+                Logging.WriteException("Failed to create mapper for device!", ex);
                 return null;
             }
         }
@@ -182,9 +182,9 @@ namespace RB4InstrumentMapper.Parsing
 
             if (mapper != null)
             {
-                PacketLogging.PrintVerbose($"Created new {mapper.GetType().Name}");
+                Logging.WriteLine($"Created new {mapper.GetType().Name}");
                 if (!devicesAvailable)
-                    PacketLogging.PrintMessage("Device limit reached, no new devices will be handled.");
+                    Logging.WriteLine("Device limit reached, no new devices will be handled.");
             }
 
             return mapper;
@@ -193,7 +193,7 @@ namespace RB4InstrumentMapper.Parsing
         public static DeviceMapper GetGamepadMapper(IBackendClient client)
         {
 #if DEBUG
-            PacketLogging.PrintMessage("Warning: Gamepads are only supported in debug mode for testing purposes, they will not work in release builds.");
+            Logging.WriteLine("Warning: Gamepads are only supported in debug mode for testing purposes, they will not work in release builds.");
             return GetMapper(client,
                 (c) => new GamepadVigemMapper(c),
                 (c) => new GamepadVjoyMapper(c),
@@ -242,7 +242,7 @@ namespace RB4InstrumentMapper.Parsing
         public static DeviceMapper GetWirelessLegacyMapper(IBackendClient client)
         {
             var mapper = new WirelessLegacyMapper(client);
-            PacketLogging.PrintVerbose($"Created new {nameof(WirelessLegacyMapper)} mapper");
+            Logging.WriteLine($"Created new {nameof(WirelessLegacyMapper)} mapper");
             return mapper;
         }
 

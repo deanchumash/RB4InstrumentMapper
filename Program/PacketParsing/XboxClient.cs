@@ -165,8 +165,8 @@ namespace RB4InstrumentMapper.Parsing
                     return XboxResult.Success;
                 }
 
-                PacketLogging.PrintMessage("Warning: This device was not encountered during its initial connection! It will use the fallback mapper instead of one specific to its device interface.");
-                PacketLogging.PrintMessage("Reconnect it (or hit Start before connecting it) to ensure correct behavior.");
+                Logging.WriteLine("Warning: This device was not encountered during its initial connection! It will use the fallback mapper instead of one specific to its device interface.");
+                Logging.WriteLine("Reconnect it (or hit Start before connecting it) to ensure correct behavior.");
             }
 
             return deviceMapper.HandleMessage(commandId, commandData);
@@ -180,7 +180,7 @@ namespace RB4InstrumentMapper.Parsing
             if (!ParsingUtils.TryRead(data, out XboxArrival arrival))
                 return XboxResult.InvalidMessage;
 
-            PacketLogging.PrintVerbose($"New client connected with ID {arrival.SerialNumber:X12}");
+            Logging.WriteLineVerbose($"New client connected with ID {arrival.SerialNumber:X12}");
             Arrival = arrival;
 
             // Kick off descriptor request

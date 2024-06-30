@@ -49,14 +49,14 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = header.UserIndex;
             if (!mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerbose($"Missing mapper for wireless legacy user index {userIndex}!");
+                Logging.WriteLineVerbose($"Missing mapper for wireless legacy user index {userIndex}!");
                 return XboxResult.InvalidMessage;
             }
 
             // Verify the device type
             if (subMapper.DeviceType != header.DeviceType)
             {
-                PacketLogging.PrintVerbose($"Wrong input type for wireless legacy user index {userIndex}! Expected {subMapper.DeviceType}, got {header.DeviceType}");
+                Logging.WriteLineVerbose($"Wrong input type for wireless legacy user index {userIndex}! Expected {subMapper.DeviceType}, got {header.DeviceType}");
                 return XboxResult.InvalidMessage;
             }
 
@@ -75,7 +75,7 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = connect.UserIndex;
             if (mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerbose($"Mapper already exists for legacy adapter user index {userIndex}! Overwriting.");
+                Logging.WriteLineVerbose($"Mapper already exists for legacy adapter user index {userIndex}! Overwriting.");
                 subMapper.Mapper?.Dispose();
             }
 
@@ -93,7 +93,7 @@ namespace RB4InstrumentMapper.Parsing
             byte userIndex = disconnect.UserIndex;
             if (!mappers.TryGetValue(userIndex, out var subMapper))
             {
-                PacketLogging.PrintVerbose($"Missing mapper for legacy adapter user index {userIndex}!");
+                Logging.WriteLineVerbose($"Missing mapper for legacy adapter user index {userIndex}!");
                 return XboxResult.InvalidMessage;
             }
 
@@ -138,8 +138,8 @@ namespace RB4InstrumentMapper.Parsing
                     return MapperFactory.GetDrumsMapper(client);
 
                 default:
-                    PacketLogging.PrintMessage($"User index {connect.UserIndex + 1} on the legacy adapter has an unsupported device type {type} (XInput subtype {connect.XInputSubType})!");
-                    PacketLogging.PrintMessage("If you think it should be supported, restart capture with packet logging to a file enabled, go through all of the inputs, and create a GitHub issue with the log file attached.");
+                    Logging.WriteLine($"User index {connect.UserIndex + 1} on the legacy adapter has an unsupported device type {type} (XInput subtype {connect.XInputSubType})!");
+                    Logging.WriteLine("If you think it should be supported, restart capture with packet logging to a file enabled, go through all of the inputs, and create a GitHub issue with the log file attached.");
                     return null;
             }
         }

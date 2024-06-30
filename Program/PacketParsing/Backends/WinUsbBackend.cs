@@ -84,7 +84,7 @@ namespace RB4InstrumentMapper.Parsing
             device.StartReading();
             devices[devicePath] = device;
 
-            PacketLogging.PrintMessage($"USB device {devicePath} connected");
+            Logging.WriteLine($"USB device {devicePath} connected");
             DeviceCountChanged?.Invoke();
         }
 
@@ -99,7 +99,7 @@ namespace RB4InstrumentMapper.Parsing
             if (remove)
                 devices.TryRemove(devicePath, out _);
 
-            PacketLogging.PrintMessage($"USB device {devicePath} disconnected");
+            Logging.WriteLine($"USB device {devicePath} disconnected");
             DeviceCountChanged?.Invoke();
         }
 
@@ -108,8 +108,8 @@ namespace RB4InstrumentMapper.Parsing
             inputsEnabled = true;
             if (!devices.IsEmpty)
             {
-                PacketLogging.PrintMessage("Rebooting USB devices to ensure proper startup. Hang tight...");
-                PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+                Logging.WriteLine("Rebooting USB devices to ensure proper startup. Hang tight...");
+                Logging.WriteLine("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
                 return Task.Run(ResetDevices);
             }
 
@@ -121,8 +121,8 @@ namespace RB4InstrumentMapper.Parsing
             inputsEnabled = false;
             if (!devices.IsEmpty)
             {
-                PacketLogging.PrintMessage("Rebooting USB devices to refresh them after mapping...");
-                PacketLogging.PrintMessage("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
+                Logging.WriteLine("Rebooting USB devices to refresh them after mapping...");
+                Logging.WriteLine("(If this takes more than 15 seconds or so, try re-connecting your devices.)");
                 return Task.Run(ResetDevices);
             }
 
@@ -146,8 +146,8 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                // Verbose since this will be attempted twice: once in-process, and once in a separate elevated process
-                PacketLogging.PrintVerboseException($"Failed to switch device {instanceId} to WinUSB!", ex);
+                // Verbose since this will be attempted twice, and the first attempt will always fail if we're not elevated
+                Logging.WriteExceptionVerbose($"Failed to switch device {instanceId} to WinUSB!", ex);
                 return false;
             }
         }
@@ -174,8 +174,8 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                // Verbose since this will be attempted twice: once in-process, and once in a separate elevated process
-                PacketLogging.PrintVerboseException($"Failed to switch device {device.InstanceId} to WinUSB!", ex);
+                // Verbose since this will be attempted twice, and the first attempt will always fail if we're not elevated
+                Logging.WriteExceptionVerbose($"Failed to switch device {device.InstanceId} to WinUSB!", ex);
                 return false;
             }
         }
@@ -189,8 +189,8 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                // Verbose since this will be attempted twice: once in-process, and once in a separate elevated process
-                PacketLogging.PrintVerboseException($"Failed to revert device {instanceId} to its original driver!", ex);
+                // Verbose since this will be attempted twice, and the first attempt will always fail if we're not elevated
+                Logging.WriteExceptionVerbose($"Failed to revert device {instanceId} to its original driver!", ex);
                 return false;
             }
         }
@@ -212,7 +212,7 @@ namespace RB4InstrumentMapper.Parsing
             catch (Exception ex)
             {
                 // Verbose since this will be attempted twice: once in-process, and once in a separate elevated process
-                PacketLogging.PrintVerboseException($"Failed to revert device {device.InstanceId} to its original driver!", ex);
+                Logging.WriteExceptionVerbose($"Failed to revert device {device.InstanceId} to its original driver!", ex);
                 return false;
             }
         }

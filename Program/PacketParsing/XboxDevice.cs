@@ -67,7 +67,7 @@ namespace RB4InstrumentMapper.Parsing
         public unsafe XboxResult HandlePacket(XboxPacket packet)
         {
             // Debugging (if enabled)
-            PacketLogging.LogPacket(packet);
+            PacketLogging.WritePacket(packet);
 
             // Some devices may send multiple messages in a single packet, placing them back-to-back
             // The header length is very important in these scenarios, as it determines which bytes are part of the message
@@ -112,12 +112,12 @@ namespace RB4InstrumentMapper.Parsing
                     case XboxResult.Disconnected:
                         client.Dispose();
                         clients.Remove(header.Client);
-                        PacketLogging.PrintVerbose($"Client {client.Arrival.SerialNumber:X12} disconnected");
+                        Logging.WriteLineVerbose($"Client {client.Arrival.SerialNumber:X12} disconnected");
                         break;
                     case XboxResult.Reconnected:
                         return clientResult;
                     default:
-                        PacketLogging.PrintVerbose($"Error handling message: {clientResult}");
+                        Logging.WriteLineVerbose($"Error handling message: {clientResult}");
                         break;
                 }
 
@@ -182,7 +182,7 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             var xboxPacket = new XboxPacket(packetBuffer, directionIn: false);
-            PacketLogging.LogPacket(xboxPacket);
+            PacketLogging.WritePacket(xboxPacket);
             return SendPacket(packetBuffer);
         }
 

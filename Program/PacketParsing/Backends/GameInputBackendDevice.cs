@@ -108,7 +108,7 @@ namespace RB4InstrumentMapper.Parsing
                 // RegisterReadingCallback is not implemented at the time of writing,
                 // so we fall back to polling on failure
                 if (result != E_NOTIMPL)
-                    PacketLogging.PrintMessage($"Couldn't register reading callback, falling back to manual polling. Error result: 0x{result:X4}");
+                    Logging.WriteLine($"Couldn't register reading callback, falling back to manual polling. Error result: 0x{result:X4}");
                 ReadThreaded(deviceMapper);
             }
         }
@@ -127,7 +127,7 @@ namespace RB4InstrumentMapper.Parsing
                         continue;
 
                     if (hResult != (int)GameInputResult.DeviceDisconnected)
-                        PacketLogging.PrintVerbose($"Failed to get current reading: 0x{hResult:X8}");
+                        Logging.WriteLineVerbose($"Failed to get current reading: 0x{hResult:X8}");
                     break;
                 }
 
@@ -149,7 +149,7 @@ namespace RB4InstrumentMapper.Parsing
         {
             if (!reading.GetRawReport(out var rawReport))
             {
-                PacketLogging.PrintVerbose("Could not get raw report!");
+                Logging.WriteLineVerbose("Could not get raw report!");
                 return false;
             }
 
@@ -177,7 +177,7 @@ namespace RB4InstrumentMapper.Parsing
                 {
                     Header = new ReadOnlySpan<byte>(&reportId, sizeof(byte))
                 };
-                PacketLogging.LogPacket(packet);
+                PacketLogging.WritePacket(packet);
 
                 var result = mapper.HandleMessage(reportId, data);
                 if (result == XboxResult.Disconnected)
@@ -217,14 +217,14 @@ namespace RB4InstrumentMapper.Parsing
             {
                 Header = new ReadOnlySpan<byte>(&header.CommandId, sizeof(byte))
             };
-            PacketLogging.LogPacket(xboxPacket);
+            PacketLogging.WritePacket(xboxPacket);
 
             if (ioError)
                 return XboxResult.Disconnected;
 
             const int retryThreshold = 3;
             for (int tryCount = 0; tryCount < retryThreshold; tryCount++,
-                PacketLogging.PrintVerbose($"Error while sending report! (Attempt {tryCount})"))
+                Logging.WriteLineVerbose($"Error while sending report! (Attempt {tryCount})"))
             {
                 int hResult = device.CreateRawDeviceReport(header.CommandId, GameInputRawDeviceReportKind.Output, out var report);
                 if (hResult < 0)
@@ -232,7 +232,7 @@ namespace RB4InstrumentMapper.Parsing
                     if (hResult == (int)GameInputResult.DeviceDisconnected)
                         return XboxResult.Disconnected;
 
-                    PacketLogging.PrintVerbose($"Failed to create raw report: 0x{hResult:X8}");
+                    Logging.WriteLineVerbose($"Failed to create raw report: 0x{hResult:X8}");
                     continue;
                 }
 
@@ -242,7 +242,7 @@ namespace RB4InstrumentMapper.Parsing
                     {
                         if (!report.SetRawData((UIntPtr)data.Length, ptr))
                         {
-                            PacketLogging.PrintVerbose("Failed to set raw report data!");
+                            Logging.WriteLineVerbose("Failed to set raw report data!");
                             continue;
                         }
                     }
@@ -258,7 +258,7 @@ namespace RB4InstrumentMapper.Parsing
                         if (hResult == (int)GameInputResult.DeviceDisconnected)
                             return XboxResult.Disconnected;
 
-                        PacketLogging.PrintVerbose($"Failed to send raw report: 0x{hResult:X8}");
+                        Logging.WriteLineVerbose($"Failed to send raw report: 0x{hResult:X8}");
                         continue;
                     }
 

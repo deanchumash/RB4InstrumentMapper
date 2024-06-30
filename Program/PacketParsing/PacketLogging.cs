@@ -5,60 +5,19 @@ namespace RB4InstrumentMapper.Parsing
 {
     internal static class PacketLogging
     {
-        public static void LogPacket(XboxPacket packet)
+        public static void WritePacket(XboxPacket packet)
         {
             if (!BackendSettings.LogPackets)
                 return;
 
-            string packetString = packet.ToString();
-            LogMessage(packetString);
+            WriteLine(packet.ToString());
         }
 
-        public static void LogMessage(string message)
+        public static void WriteLine(string message)
         {
             Debug.WriteLine(message);
             Console.WriteLine(message);
             Logging.Packet_WriteLine(message);
-        }
-
-        public static void PrintMessage(string message)
-        {
-            Debug.WriteLine(message);
-            Console.WriteLine(message);
-        }
-
-        public static void PrintVerbose(string message)
-        {
-            // Always log messages to debug/log
-            Debug.WriteLine(message);
-            Logging.Main_WriteLine(message);
-            if (!BackendSettings.PrintVerboseLogs)
-                return;
-
-            Console.WriteLine(message);
-        }
-
-        public static void PrintException(string message, Exception ex)
-        {
-            Debug.WriteLine(message);
-            Debug.WriteLine(ex);
-            Logging.Main_WriteException(ex, message);
-            Console.WriteLine(message);
-            Console.WriteLine(ex.GetFirstLine());
-        }
-
-        public static void PrintVerboseException(string message, Exception ex)
-        {
-            // Always log errors to debug/log
-            Debug.WriteLine(message);
-            Debug.WriteLine(ex);
-            Logging.Main_WriteException(ex, message);
-
-            if (!BackendSettings.PrintVerboseLogs)
-                return;
-
-            Console.WriteLine(message);
-            Console.WriteLine(ex.GetFirstLine());
         }
     }
 }

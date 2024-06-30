@@ -330,7 +330,7 @@ namespace RB4InstrumentMapper
             }
 
             Settings.Default.verboseLogging = enabled;
-            BackendSettings.PrintVerboseLogs = enabled;
+            Logging.PrintVerbose = enabled;
         }
 
         private void SetDeviceType(ControllerType type)

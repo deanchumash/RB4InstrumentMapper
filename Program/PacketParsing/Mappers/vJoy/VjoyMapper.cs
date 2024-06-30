@@ -27,7 +27,7 @@ namespace RB4InstrumentMapper.Parsing
             }
 
             state.bDevice = (byte)deviceId;
-            PacketLogging.PrintVerbose($"Acquired vJoy device with ID of {deviceId}");
+            Logging.WriteLineVerbose($"Acquired vJoy device with ID of {deviceId}");
         }
 
         protected override void MapGuideButton(bool pressed)

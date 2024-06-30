@@ -51,7 +51,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                PacketLogging.PrintException("Failed to create WinUSB device!", ex);
+                Logging.WriteException("Failed to create WinUSB device!", ex);
                 return null;
             }
         }
@@ -65,7 +65,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                PacketLogging.PrintException("Failed to determine device compatibility!", ex);
+                Logging.WriteException("Failed to determine device compatibility!", ex);
                 return false;
             }
         }
@@ -87,7 +87,7 @@ namespace RB4InstrumentMapper.Parsing
             }
             catch (Exception ex)
             {
-                PacketLogging.PrintException("Failed to determine device compatibility!", ex);
+                Logging.WriteException("Failed to determine device compatibility!", ex);
                 return false;
             }
         }
@@ -120,7 +120,7 @@ namespace RB4InstrumentMapper.Parsing
                 }
                 catch (Exception ex)
                 {
-                    PacketLogging.PrintVerboseException($"Failed to abort read pipe!", ex);
+                    Logging.WriteExceptionVerbose($"Failed to abort read pipe!", ex);
                 }
             }
 
@@ -194,7 +194,7 @@ namespace RB4InstrumentMapper.Parsing
                 }
                 catch (Exception ex)
                 {
-                    PacketLogging.PrintVerboseException($"Error while reading packet! (Attempt {retryCount + 1})", ex);
+                    Logging.WriteExceptionVerbose($"Error while reading packet! (Attempt {retryCount + 1})", ex);
                 }
             }
             while (++retryCount < retryThreshold);
@@ -220,7 +220,7 @@ namespace RB4InstrumentMapper.Parsing
                 }
                 catch (Exception ex)
                 {
-                    PacketLogging.PrintVerboseException($"Error while sending packet! (Attempt {retryCount + 1})", ex);
+                    Logging.WriteExceptionVerbose($"Error while sending packet! (Attempt {retryCount + 1})", ex);
                 }
             }
             while (++retryCount < retryThreshold);
