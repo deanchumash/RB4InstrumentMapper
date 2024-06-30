@@ -1,4 +1,3 @@
-
 using System;
 
 namespace RB4InstrumentMapper.Parsing

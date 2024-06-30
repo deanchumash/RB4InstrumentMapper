@@ -1,5 +1,4 @@
 #if DEBUG
-using System;
 using System.Runtime.InteropServices;
 
 namespace RB4InstrumentMapper.Parsing

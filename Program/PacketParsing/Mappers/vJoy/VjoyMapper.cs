@@ -1,4 +1,3 @@
-using System;
 using RB4InstrumentMapper.Vjoy;
 using vJoyInterfaceWrap;
 

@@ -1,6 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
-using RB4InstrumentMapper.Vjoy;
 
 namespace RB4InstrumentMapper.Parsing
 {
