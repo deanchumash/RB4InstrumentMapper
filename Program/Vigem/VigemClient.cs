@@ -1,6 +1,7 @@
 using System;
 using Nefarius.ViGEm.Client;
 using Nefarius.ViGEm.Client.Targets;
+using Nefarius.ViGEm.Client.Exceptions;
 
 namespace RB4InstrumentMapper.Vigem
 {
@@ -36,8 +37,9 @@ namespace RB4InstrumentMapper.Vigem
                 canCreateDevices = true;
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                Logging.WriteException("Failed to create ViGEmBus client!", ex);
                 client = null;
                 canCreateDevices = false;
                 return false;
