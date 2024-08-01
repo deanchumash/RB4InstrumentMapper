@@ -238,12 +238,15 @@ namespace RB4InstrumentMapper.Parsing
 
                 using (report)
                 {
-                    fixed (byte* ptr = data)
+                    if (!data.IsEmpty)
                     {
-                        if (!report.SetRawData((UIntPtr)data.Length, ptr))
+                        fixed (byte* ptr = data)
                         {
-                            Logging.WriteLineVerbose("Failed to set raw report data!");
-                            continue;
+                            if (!report.SetRawData((UIntPtr)data.Length, ptr))
+                            {
+                                Logging.WriteLineVerbose("Failed to set raw report data!");
+                                continue;
+                            }
                         }
                     }
 
