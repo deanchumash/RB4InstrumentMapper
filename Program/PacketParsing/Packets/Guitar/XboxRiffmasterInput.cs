@@ -20,6 +20,6 @@ namespace RB4InstrumentMapper.Parsing
         public bool ShareButton => (systemButtons & 0x01) != 0;
 
         public bool JoystickClick => (Base.Buttons & (ushort)XboxGamepadButton.LeftStickPress) != 0
-            && Base.LowerFrets == 0; // Overlaps with the solo fret flag, ignore if any of them are pressed
+            && !Base.LowerFretsPressed; // Overlaps with the solo fret flag
     }
 }

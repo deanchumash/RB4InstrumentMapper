@@ -61,7 +61,7 @@ namespace RB4InstrumentMapper.Parsing
             device.SetButtonState(Xbox360Button.LeftShoulder, report.Orange);
 
             // Lower fret flag
-            device.SetButtonState(Xbox360Button.LeftThumb, report.LowerFretFlag);
+            device.SetButtonState(Xbox360Button.LeftThumb, report.LowerFretsPressed);
 
             // Whammy
             device.SetAxisValue(Xbox360Axis.RightThumbX, report.WhammyBar.ScaleToInt16());

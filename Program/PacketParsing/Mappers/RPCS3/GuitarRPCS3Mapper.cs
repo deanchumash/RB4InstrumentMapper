@@ -68,7 +68,7 @@ namespace RB4InstrumentMapper.Parsing
             // Lower fret flag
             // This uses the L2 button bit on PS3 guitars, which we can't set directly,
             // so we set the trigger axis instead
-            device.SetSliderValue(Xbox360Slider.LeftTrigger, report.LowerFretFlag ? byte.MaxValue : byte.MinValue);
+            device.SetSliderValue(Xbox360Slider.LeftTrigger, report.LowerFretsPressed ? byte.MaxValue : byte.MinValue);
 
             // Whammy
             device.SetAxisValue(Xbox360Axis.RightThumbX, report.WhammyBar.ScaleToInt16());

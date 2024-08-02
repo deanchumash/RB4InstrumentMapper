@@ -56,6 +56,6 @@ namespace RB4InstrumentMapper.Parsing
         public bool Blue => ((UpperFrets | LowerFrets) & (byte)XboxGuitarFret.Blue) != 0;
         public bool Orange => ((UpperFrets | LowerFrets) & (byte)XboxGuitarFret.Orange) != 0;
 
-        public bool LowerFretFlag => (Buttons & (ushort)XboxGuitarButton.LowerFretFlag) != 0;
+        public bool LowerFretsPressed => LowerFrets != 0;
     }
 }

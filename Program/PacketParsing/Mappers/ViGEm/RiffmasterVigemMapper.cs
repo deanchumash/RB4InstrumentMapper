@@ -48,7 +48,7 @@ namespace RB4InstrumentMapper.Parsing
             // Joystick
             device.SetAxisValue(Xbox360Axis.LeftThumbX, report.JoystickX);
             device.SetAxisValue(Xbox360Axis.LeftThumbY, report.JoystickY);
-            device.SetButtonState(Xbox360Button.LeftThumb, report.JoystickClick | report.Base.LowerFretFlag);
+            device.SetButtonState(Xbox360Button.LeftThumb, report.JoystickClick | report.Base.LowerFretsPressed);
         }
     }
 }
