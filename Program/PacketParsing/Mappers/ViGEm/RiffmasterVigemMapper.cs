@@ -48,8 +48,7 @@ namespace RB4InstrumentMapper.Parsing
             // Joystick
             device.SetAxisValue(Xbox360Axis.LeftThumbX, report.JoystickX);
             device.SetAxisValue(Xbox360Axis.LeftThumbY, report.JoystickY);
-            // Note: overwrites the solo fret flag
-            device.SetButtonState(Xbox360Button.LeftThumb, report.JoystickClick);
+            device.SetButtonState(Xbox360Button.LeftThumb, report.JoystickClick | report.Base.LowerFretFlag);
         }
     }
 }
