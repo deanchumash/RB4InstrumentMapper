@@ -160,8 +160,7 @@ namespace RB4InstrumentMapper.Parsing
 
                 // Process packet data
                 var packetData = readBuffer.Slice(0, bytesRead);
-                var xboxPacket = new XboxPacket(packetData, directionIn: true);
-                var result = HandlePacket(xboxPacket);
+                var result = HandleRawPacket(packetData);
                 switch (result)
                 {
                     case XboxResult.Success:

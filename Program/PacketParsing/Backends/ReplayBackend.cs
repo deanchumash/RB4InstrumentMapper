@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using RB4InstrumentMapper.Vigem;
 using RB4InstrumentMapper.Vjoy;
@@ -43,13 +45,11 @@ namespace RB4InstrumentMapper.Parsing
             Console.WriteLine($"Using mapping mode {mappingMode}");
 
             string[] lines = File.ReadAllLines(logPath);
-            var device = new XboxDevice(BackendType.Replay);
+            var previousSequence = new Dictionary<byte, Dictionary<byte, byte>>();
+            using var device = new XboxDevice(BackendType.Replay);
+            device.EnableInputs(true);
             foreach (string line in lines)
             {
-                // Stop if the device has been removed
-                if (device == null)
-                    break;
-
                 // Remove any comments
                 int spanEnd = line.IndexOf("//");
                 if (spanEnd < 0)
@@ -59,59 +59,54 @@ namespace RB4InstrumentMapper.Parsing
                 if (lineSpan.IsEmpty)
                     continue;
 
-                if (!XboxPacket.TryParse(lineSpan, out var packet))
+                if (!PacketLogging.TryParsePacket(lineSpan, out var headerBytes, out var data, out var direction) ||
+                    !XboxCommandHeader.TryParse(headerBytes, out var header, out _))
                 {
                     Console.WriteLine($"Couldn't parse line: {line}");
-                    continue;
+                    Debugger.Break();
+                    break;
                 }
 
                 // Skip packets that were sent from us
-                if (!packet.DirectionIn)
+                if (direction != PacketDirection.In)
                 {
                     Console.WriteLine($"Skipping direction-out line: {line}");
                     continue;
                 }
 
-                Console.WriteLine($"Processing line: {line}");
-                try
+                // Ensure correct header data length (for GameInput)
+                header.DataLength = data.Length;
+
+                // Set proper sequence ID if unspecified (for GameInput)
+                if (header.SequenceCount == 0)
                 {
-                retry:
-                    var result = device.HandlePacket(packet);
-                    switch (result)
+                    if (!previousSequence.TryGetValue(header.Client, out var clientSequence))
                     {
-                        case XboxResult.Success:
-                            break;
-                        case XboxResult.Disconnected:
-                            device.Dispose();
-                            device = null;
-                            Console.WriteLine("Device was disconnected");
-                            break;
-
-                        case XboxResult.Reconnected:
-                            device.Dispose();
-                            device = new XboxDevice(BackendType.Replay);
-                            Console.WriteLine("Device was reconnected");
-                            goto retry;
-
-                        case XboxResult.UnsupportedDevice:
-                            device.Dispose();
-                            device = null;
-                            Console.WriteLine("Unsupported device");
-                            break;
-
-                        default:
-                            Console.WriteLine($"Unhandled device result: {result}");
-                            break;
+                        clientSequence = new Dictionary<byte, byte>();
+                        previousSequence.Add(header.Client, clientSequence);
                     }
+
+                    if (!clientSequence.TryGetValue(header.CommandId, out byte sequence) ||
+                        sequence == 0xFF) // Sequence IDs of 0 are not valid
+                        sequence = 0;
+
+                    header.SequenceCount = ++sequence;
+                    clientSequence[header.CommandId] = sequence;
                 }
-                catch (Exception ex)
+
+                Console.WriteLine($"Processing line: {line}");
+                var result = device.HandlePacket(header, data);
+                if (result != XboxResult.Success)
                 {
-                    Console.WriteLine($"Error while handling line: {ex}");
-                    continue;
+                    Console.WriteLine($"Error when handling line: {result}");
+                    Debugger.Break();
+                    break;
                 }
             }
 
-            device?.Dispose();
+            // Debug break before the device is disposed
+            Debugger.Break();
+
             return true;
         }
     }

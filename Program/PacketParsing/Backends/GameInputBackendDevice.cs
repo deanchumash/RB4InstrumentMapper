@@ -173,11 +173,11 @@ namespace RB4InstrumentMapper.Parsing
                 data.CopyTo(lastReport);
                 lastReportLength = data.Length;
 
-                var packet = new XboxPacket(data, directionIn: true)
-                {
-                    Header = new ReadOnlySpan<byte>(&reportId, sizeof(byte))
-                };
-                PacketLogging.WritePacket(packet);
+                PacketLogging.WritePacket(
+                    new ReadOnlySpan<byte>(&reportId, sizeof(byte)),
+                    data,
+                    PacketDirection.In
+                );
 
                 var result = mapper.HandleMessage(reportId, data);
                 if (result == XboxResult.Disconnected)
@@ -213,11 +213,11 @@ namespace RB4InstrumentMapper.Parsing
 
         public unsafe XboxResult SendMessage(XboxCommandHeader header, Span<byte> data)
         {
-            var xboxPacket = new XboxPacket(data, directionIn: false)
-            {
-                Header = new ReadOnlySpan<byte>(&header.CommandId, sizeof(byte))
-            };
-            PacketLogging.WritePacket(xboxPacket);
+            PacketLogging.WritePacket(
+                new ReadOnlySpan<byte>(&header.CommandId, sizeof(byte)),
+                data,
+                PacketDirection.Out
+            );
 
             if (ioError)
                 return XboxResult.Disconnected;

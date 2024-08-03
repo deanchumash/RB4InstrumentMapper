@@ -20,8 +20,6 @@ namespace RB4InstrumentMapper.Parsing
         Pending,
         /// <summary>The device was disconnected.</summary>
         Disconnected,
-        /// <summary>The device was reconnected without a disconnection message.</summary>
-        Reconnected,
         /// <summary>The packet contains an invalid message.</summary>
         InvalidMessage,
         /// <summary>The device being connected is not supported.</summary>
@@ -64,15 +62,11 @@ namespace RB4InstrumentMapper.Parsing
         /// <summary>
         /// Handles an incoming packet for this device.
         /// </summary>
-        public unsafe XboxResult HandlePacket(XboxPacket packet)
+        public unsafe XboxResult HandleRawPacket(ReadOnlySpan<byte> data)
         {
-            // Debugging (if enabled)
-            PacketLogging.WritePacket(packet);
-
             // Some devices may send multiple messages in a single packet, placing them back-to-back
             // The header length is very important in these scenarios, as it determines which bytes are part of the message
             // and where the next message's header begins.
-            var data = packet.Data;
             while (!data.IsEmpty)
             {
                 // Command header
@@ -88,41 +82,57 @@ namespace RB4InstrumentMapper.Parsing
                     return XboxResult.InvalidMessage;
                 }
 
-                var messageData = data.Slice(0, messageLength);
-                var commandData = messageData.Slice(headerLength);
+                var headerData = data.Slice(0, headerLength);
+                var commandData = data.Slice(headerLength, header.DataLength);
 
-                if (!clients.TryGetValue(header.Client, out var client))
-                {
-                    client = new XboxClient(this, header.Client);
-                    clients.Add(header.Client, client);
-                }
+                // Debugging (if enabled)
+                PacketLogging.WritePacket(headerData, commandData, PacketDirection.In);
 
-                var clientResult = client.HandleMessage(header, commandData);
-                switch (clientResult)
-                {
-                    case XboxResult.Success:
-                    case XboxResult.Pending:
-                        break;
-                    case XboxResult.UnsupportedDevice:
-                        client.Dispose();
-                        clients.Remove(header.Client);
-                        if (header.Client == 0)
-                            return clientResult;
-                        break;
-                    case XboxResult.Disconnected:
-                        client.Dispose();
-                        clients.Remove(header.Client);
-                        Logging.WriteLineVerbose($"Client {client.Arrival.SerialNumber:X12} disconnected");
-                        break;
-                    case XboxResult.Reconnected:
-                        return clientResult;
-                    default:
-                        Logging.WriteLineVerbose($"Error handling message: {clientResult}");
-                        break;
-                }
+                var result = HandlePacket(header, commandData);
+                if (result != XboxResult.Success)
+                    return result;
 
                 // Progress to next message
-                data = data.Slice(messageData.Length);
+                data = data.Slice(messageLength);
+            }
+
+            return XboxResult.Success;
+        }
+
+        /// <summary>
+        /// Handles an incoming packet for this device.
+        /// </summary>
+        public unsafe XboxResult HandlePacket(XboxCommandHeader header, ReadOnlySpan<byte> commandData)
+        {
+            // No logging, no way to see the source data from here
+            // PacketLogging.WritePacket(headerData, commandData, PacketDirection.In);
+
+            if (!clients.TryGetValue(header.Client, out var client))
+            {
+                client = new XboxClient(this, header.Client);
+                clients.Add(header.Client, client);
+            }
+
+            var clientResult = client.HandleMessage(header, commandData);
+            switch (clientResult)
+            {
+                case XboxResult.Success:
+                case XboxResult.Pending:
+                    break;
+                case XboxResult.UnsupportedDevice:
+                    client.Dispose();
+                    clients.Remove(header.Client);
+                    if (header.Client == 0)
+                        return clientResult;
+                    break;
+                case XboxResult.Disconnected:
+                    client.Dispose();
+                    clients.Remove(header.Client);
+                    Logging.WriteLineVerbose($"Client {client.Arrival.SerialNumber:X12} disconnected");
+                    break;
+                default:
+                    Logging.WriteLineVerbose($"Error handling message: {clientResult}");
+                    break;
             }
 
             return XboxResult.Success;
@@ -181,8 +191,11 @@ namespace RB4InstrumentMapper.Parsing
                 return XboxResult.InvalidMessage;
             }
 
-            var xboxPacket = new XboxPacket(packetBuffer, directionIn: false);
-            PacketLogging.WritePacket(xboxPacket);
+            PacketLogging.WritePacket(
+                packetBuffer.Slice(0, bytesWritten),
+                data,
+                PacketDirection.Out
+            );
             return SendPacket(packetBuffer);
         }
 

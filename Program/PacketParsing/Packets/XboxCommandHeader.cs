@@ -49,10 +49,22 @@ namespace RB4InstrumentMapper.Parsing
 
         public static bool TryParse(ReadOnlySpan<byte> data, out XboxCommandHeader header, out int bytesRead)
         {
-            header = default;
-            bytesRead = 0;
             if (data.Length < MinimumByteLength)
             {
+                // GameInput backend only logs the command ID for the header
+                if (data.Length == 1)
+                {
+                    header = new XboxCommandHeader()
+                    {
+                        CommandId = data[0],
+                        Client = PrimaryClient,
+                    };
+                    bytesRead = 1;
+                    return true;
+                }
+
+                header = default;
+                bytesRead = 0;
                 return false;
             }
 
@@ -63,7 +75,7 @@ namespace RB4InstrumentMapper.Parsing
                 Flags_Client = data[1],
                 SequenceCount = data[2],
             };
-            bytesRead += MinimumByteLength - 1;
+            bytesRead = MinimumByteLength - 1;
 
             // Message length
             if (!DecodeLEB128(data.Slice(bytesRead), out int dataLength, out int byteLength))

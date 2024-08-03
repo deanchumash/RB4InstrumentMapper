@@ -38,7 +38,7 @@ namespace RB4InstrumentMapper.Parsing
                 return false;
 
             // Determine number of bytes based on character count
-            input.Trim(); // All whitespace must be removed for count to be correct
+            input = input.Trim(); // All whitespace must be removed for count to be correct
             int charCount = input.Length + 1; // + 1 to account for removed '-'
             int byteCount = Math.DivRem(charCount, 3, out int remainder);
             if (remainder != 0)
