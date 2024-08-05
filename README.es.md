@@ -237,7 +237,7 @@ En el caso de que programa falle, el error se va a registrar en un archivo dentr
 
 Para construir este programa, vas a necesitar:
 
-- Visual Studio, o MSBuild/[es SDK de .NET](https://dotnet.microsoft.com/es-es/download) + tu editor de código preferido.
+- Visual Studio, o MSBuild/[el SDK de .NET](https://dotnet.microsoft.com/es-es/download) + tu editor de código preferido.
 - [WiX Toolset v4](https://wixtoolset.org/) si quieres construir el instalador.
 
 ## Referencias
@@ -249,7 +249,7 @@ Antecesores:
 
 Datos de paquetes:
 
-- [Registros de paquetes de guitarra por GuitarSniffer(https://1drv.ms/f/s!AgQGk0OeTMLwhA-uDO9IQHEHqGhv)
+- [Registros de paquetes de guitarra por GuitarSniffer](https://1drv.ms/f/s!AgQGk0OeTMLwhA-uDO9IQHEHqGhv)
 - Hoja de datos de paquetes para guitarras de GuitarSniffer: [Nuevos](https://docs.google.com/spreadsheets/d/1ITZUvRniGpfS_HV_rBpSwlDdGukc3GC1CeOe7SavQBo/edit?usp=sharing), [Viejos](https://1drv.ms/x/s!AgQGk0OeTMLwg3GBDXFUC3Erj4Wb)
 - [Codigo fuente de Javascript de rb4.app](https://rb4.app/js/app.js)
 - Investigación original, publicada en el [repositorio de documentación PlasticBand](https://github.com/TheNathannator/PlasticBand).
