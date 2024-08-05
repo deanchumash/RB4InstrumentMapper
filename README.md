@@ -1,4 +1,6 @@
 ﻿# RB4InstrumentMapper
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/TheNathannator/RB4InstrumentMapper/blob/main/README.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/TheNathannator/RB4InstrumentMapper/blob/main/README.es.md)
 
 A program that maps packets from Xbox One instrument peripherals to virtual controllers, for use in games such as [Clone Hero](https://clonehero.net/).
 
