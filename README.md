@@ -1,4 +1,6 @@
 ﻿# RB4InstrumentMapper
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/TheNathannator/RB4InstrumentMapper/blob/main/README.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/TheNathannator/RB4InstrumentMapper/blob/main/README.es.md)
 
 A program that maps packets from Xbox One instrument peripherals to virtual controllers, for use in games such as [Clone Hero](https://clonehero.net/).
 
@@ -153,7 +155,7 @@ If you run into any issues with this process, you may try [installing the driver
    ![USB enable checkbox](Docs/Images/Readme/usb-checkbox.png)
 
 2. **Ensure you have [installed WinUSB](#setup-1) on the devices you want to use! They will not be recognized otherwise!**
-3. In the `Controller Type` dropdown, select the controller emulation mode you want to use.
+3. In the `Controller Emulation Mode` dropdown, select the controller emulation mode you want to use.
 
    ![Controller emulation mode selection](Docs/Images/Readme/controller-emulation-mode.png)
 
@@ -205,7 +207,20 @@ Refer to the [official documentation](https://ghwt.de/wiki/#/wtde/binding?id=bin
 
 ### RPCS3
 
-For RPCS3, use the `ViGEmBus (RPCS3 compatibility)` controller mode. This will change the mappings that RB4InstrumentMapper outputs so that little to no remapping is required to use instruments in RPCS3.
+1. For RPCS3, use the `ViGEmBus (RPCS3 compatibility)` controller mode. This will change the mappings that RB4InstrumentMapper outputs so that little to no remapping is required to use instruments in RPCS3.
+
+   ![Controller emulation mode selection](Docs/Images/Readme/controller-emulation-mode.png)
+
+2. Open the Gamepad Configuration Menu in RPCS3
+
+   ![RPCS3 Pads icon](Docs/Images/Readme/rpcs3-pads-icon.png)
+
+3. Change the `Handlers` to "XInput", pick your instrument under `Devices`, and set `Device Class` to "Rock Band - Guitar" if you're using a guitar or 'Rock Band - Drums' if you're using drums.
+
+   ![RPCS3 Gamepad settings](Docs/Images/Readme/rpcs3-gamepad-settings.png)
+
+4. Repeat for each connected device in the other Player tabs.
+5. Click `Done`.
 
 ## Packet Logs
 
