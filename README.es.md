@@ -36,19 +36,19 @@ Todos los instrumentos de Xbox One funcionan (guitarras/baterías de RB4, guitar
 
 ## Instalación
 
-1. Descarga y instala RB4InstrumentMapper de [la pagina de pagina de publicaciones (Releases)](https://github.com/TheNathannator/RB4InstrumentMapper/releases).
+1. Descarga y instala RB4InstrumentMapper de [la pagina de publicaciones (Releases)](https://github.com/TheNathannator/RB4InstrumentMapper/releases).
 2. Descarga y configura [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases/latest) o [vJoy](https://github.com/jshafer817/vJoy/releases/latest) usando las guías abajo.
-   - ViGEmBus es recomendado porque es mas fácil para usar y no requiere configuración adicional. vJoy es una opción alternativa por si tienes problemas con ViGEmBus.
-   - Los dos se pueden instalar al mismo tiempo, pero RB4InstrumentMapper solo va usar uno.
+   - ViGEmBus es recomendado porque es más fácil de usar y no requiere configuración adicional. vJoy es una opción alternativa por si tienes problemas con ViGEmBus.
+   - Los dos se pueden instalar al mismo tiempo, pero RB4InstrumentMapper solo va a usar uno.
 
 ### Configurando ViGEmBus
 
-1. Descarga y instala [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases/latest).
+1. Descarga e instala [ViGEmBus](https://github.com/ViGEm/ViGEmBus/releases/latest).
 2. ¡Eso es todo!
 
 ### Configurando vJoy
 
-1. Descarga y instala [vJoy](https://github.com/jshafer817/vJoy/releases/latest).
+1. Descarga e instala [vJoy](https://github.com/jshafer817/vJoy/releases/latest).
 2. Después de descargar, abre el menú de Inicio, busca la carpeta llamada `vJoy` y abre `Configure vJoy` dentro de esa carpeta.
 3. Configura un dispositivo (Device) para cada uno de tus instrumentos usando estas opciones:
    - Number of Buttons: 16
@@ -69,7 +69,7 @@ Todos los instrumentos de Xbox One funcionan (guitarras/baterías de RB4, guitar
 ![Batería de Rock Band 4](Docs/Images/Peripherals/rock-band-4-drums.png "Batería de Rock Band 4")
 ![Guitarra Riffmaster](Docs/Images/Peripherals/riffmaster.png "Guitarra Riffmaster")
 
-*Toma en cuenta que RB4InstrumentMapper NO esta requerido para usar guitarras en Fortnite*
+*RB4InstrumentMapper NO es necesario para usar guitarras en Fortnite*
 
 ### Configurando
 
@@ -85,12 +85,12 @@ Para usar guitarras y baterías inalámbrica de Rock Band 4, vas a necesitar un 
 ![Receptor de Xbox One, revisión](Docs/Images/Peripherals/xbox-one-receiver-gen-2.png "Receptor de Xbox One, revisión")
 
 - ¡*No* son iguales a los receptores inalámbricos de Xbox 360! Tienes que tener un receptor para controles inalámbricos de Xbox One (o solo "Xbox"), como los ejemplos arriba.
-- Los receptores que no son originales no están probados y no recibirán soporte técnico.
+- Los receptores que no son originales no se han probado y no recibirán soporte técnico.
 
 Adicionalmente, las guitarras Jaguar ![Jaguar de Rock Band 4](Docs/Images/Peripherals/rock-band-4-jaguar-small.png "Jaguar de Rock Band 4") requieren una actualización de firmware para conectarse a receptores para controles inalámbricos de Xbox One.
 
 
-- [Instrucciones (Ingles)](https://bit.ly/2UHzonU)
+- [Instrucciones (Inglés)](https://bit.ly/2UHzonU)
 - [Recargo de la Wiki de Clone Hero](https://wiki.clonehero.net/link/61), en caso de que el enlace de arriba caiga otra vez.
 
 #### Riffmaster
@@ -108,8 +108,8 @@ Para usar la Riffmaster, vas a necesitar su receptor dedicado, en la foto abajo:
    ![Selección de Controller emulation mode](Docs/Images/Readme/controller-emulation-mode.png)
 
 2. Haz click en el botón de `Start` para empezar a leer datos que va a mandar tu instrumento.
-3. Conecta tus instrumentos. Van estar detectados y funcionando hasta que presiones el botón de `Stop` o cierres el programa.
-   - Los instrumentos deben de estar conectados antes o después de presionar el botón de `Start`, la orden no importa.
+3. Conecta tus instrumentos. Van a estar detectados y funcionando hasta que presiones el botón de `Stop` o cierres el programa.
+   - Los instrumentos deben de estar conectados antes o después de presionar el botón de `Start`, el orden no importa.
 4. [Configura tus instrumentos en los juegos en los que los vas a usar](#configurando-tus-instrumentos)
 
 #### ¿Problemas emparejando?
@@ -140,14 +140,14 @@ Vas a necesitar instalar el controlador de WinUSB al receptor de Guitar Hero Liv
    
    ![Lado izquierdo de la configuración de WinUSB](Docs/Images/Readme/usb-configure-left.png)
 
-3. Haz click en `Switch Driver` y espera para que se cambie el controlador. El dispositivo que estas modificando va a salir en el lado derecho cuando se complete esto.
+3. Haz click en `Switch Driver` y espera a que se cambie el controlador. El dispositivo que estás modificando va a salir en el lado derecho cuando se complete esto.
    
    ![Lado derecho de la configuración de WinUSB](Docs/Images/Readme/usb-configure-right.png)
 
    - Por favor toma en cuenta que cualquier juego que tenga soporte directo para estos dispositivos no va funcionar hasta que borres el controlador de WinUSB. Haz click en el botón de `Revert Driver` para revertir tus cambios para poder usar el dispositivo directamente.
 
-Si tienes problemas con esta instalación, puedes tratar [instalar el controlador manualmente (en Ingles)](Docs/WinUSB/manual-winusb-install.md). Esto no es recomendando paro mayoría de los usuarios. Solo se debe usar esta alternativa si el menú de `Configure Devices` no funciona.
-- Esto también describe como [desinstalar manualmente (en Ingles)](Docs/WinUSB/manual-winusb-install.md#remove-winusb), en caso de que el dispositivo se quede con el controlador atorado y RB4InstrumentMapper para de detectarlo.
+Si tienes problemas con esta instalación, puedes tratar [instalar el controlador manualmente (en Ingles)](Docs/WinUSB/manual-winusb-install.md). Esto no es recomendado para la mayoría de los usuarios. Solo se debe usar esta alternativa si el menú de `Configure Devices` no funciona.
+- Esto también describe como [desinstalar manualmente (en Ingles)](Docs/WinUSB/manual-winusb-install.md#remove-winusb), en caso de que el dispositivo se quede con el controlador atorado y RB4InstrumentMapper pare de detectarlo.
 
 ### Usando
 
@@ -163,19 +163,19 @@ Si tienes problemas con esta instalación, puedes tratar [instalar el controlado
 4. Haz click en el botón de `Start` para empezar a leer datos que va a mandar tu instrumento.
 5. [Configura tus instrumentos en los juegos en los que los vas a usar](#configurando-tus-instrumentos).
 
-Se va a detectar si instrumentos se conectan/desconectan automáticamente, pero no se van a mandar datos a los juegos hasta que presiones el botón de `Start`.
+Se detectará de forma automática si se conectan/desconectan instrumentos, pero no se van a mandar datos a los juegos hasta que presiones el botón de `Start`.
 
-Si tienes problemas con como se mandan los botones presiones o otras cosas raras, puedes tratar de desconectar y reconectar el receptor/cable. Desafortunadamente, la detección de estos dos tipos de dispositivos no esta completamente estable, así que es posible que no funcione perfectamente.
+Si tienes problemas con el envío de botones, ya sean presiones o cosas raras, intenta reconectar el receptor/cable. Desafortunadamente, la detección de estos dos tipos de dispositivos no es completamente estable, así que es posible que no funcione perfectamente.
 
 ---
 
 ## Configurando Tus Instrumentos
 
-Ahora que RB4InstrumentMapper esta listo y corriendo, puedes configurar los controles de tus instrumentos en los juegos que vas a jugar. 
+Ahora que RB4InstrumentMapper está listo y corriendo, puedes configurar los controles de tus instrumentos en los juegos que vas a jugar. 
 
 ### Clone Hero
 
-Si estas usando una guitarra en el modo ViGEmBus, Clone Hero va a mapear todo automáticamente. No debes de tener que hacer ajustes manuales, al menos que estés usando una guitarra de Guitar Hero Live. En ese caso, vas a necesitar cambiar la configuración de Whammy/Palanca de tremolo y de ladear.
+Si estás usando una guitarra en el modo ViGEmBus, Clone Hero va a mapear todo automáticamente. No debes de tener que hacer ajustes manuales, al menos que estés usando una guitarra de Guitar Hero Live. En ese caso, vas a necesitar cambiar la configuración de Whammy/Palanca de tremolo y de ladear.
 
 - La configuración automática también se va a aplicar a baterías, pero no va estar correcta porque esta diseñada para guitarras. Vas a necesitar cambiar la configuración que esta por defecto y ajustarla manualmente.
 
@@ -189,9 +189,9 @@ Para baterías, modo vJoy, o si necesitas ajustar tus controles por otra razón:
 
    ![Botón de "Asignar Mando"](Docs/Images/Readme/clone-hero-assign-controller_es.png)
 
-3. Haz click en las ranuras bajo la sección de `Mando` para mapear todo cada control.
+3. Haz click en las ranuras bajo la sección de `Mando` mapear todo en cada control.
 
-   ![Controles configurados bajo la sección de "Mando"](Docs/Images/Readme/clone-hero-bind-controls.png)
+   ![Controles configurados bajo la sección de "Mando"](Docs/Images/Readme/clone-hero-bind-controls_es.png)
 
 4. Repite para cada instrumento.
 5. Haz click en `Listo`.
@@ -225,13 +225,13 @@ Consulta la [documentación oficial (en Ingles)](https://ghwt.de/wiki/#/wtde/bin
 
 ## Registro de Paquetes
 
-Se puede usar RB4InstrumentMapper para registrar datos a un archivo para razones de depuración. Para hacer esto, activa `Show Packets (for debugging)` y `Log packets to file` y luego haz click en el botón de `Start`. Los datos de van a guardar en tu carpeta de Documentos. Asegúrate de incluirla cuando preguntes por ayuda o creas reportes de problemas con la interpretación de datos.
+Se puede usar RB4InstrumentMapper para registrar datos a un archivo por motivos de depuración. Para hacer esto, activa `Show Packets (for debugging)` y `Log packets to file` y luego haz click en el botón de `Start`. Los datos se van a guardar en tu carpeta de Documentos. Asegúrate de incluirla cuando preguntes por ayuda o creas reportes de problemas con la interpretación de datos.
 
-Toma en cuenta que estas opciones son solo para depurar. Dejándolas activadas puede causar problemas con el rendimiento del programa.
+Toma en cuenta que estas opciones son solo para depurar. Dejarlas activadas puede causar problemas con el rendimiento del programa.
 
 ## Registro de Errores
 
-En el caso de que programa falle, el error se va a registrar en un archivo dentro de la carpeta `RB4InstrumentMapper` > `Logs` que va estar localizada en la carpeta de tus Documentos. Asegúrate de incluirla cuando preguntes por ayuda o creas reportes de problemas con el programa.
+En caso de que el programa falle, el error se va a registrar en un archivo dentro de la carpeta `RB4InstrumentMapper` > `Logs` que va estar localizada en la carpeta de tus Documentos. Asegúrate de incluirla cuando preguntes por ayuda o creas reportes de problemas con el programa.
 
 ## Construyendo
 
@@ -256,4 +256,4 @@ Datos de paquetes:
 
 ## Licencia
 
-Este programa esta publicado con la licencia de MIT. Lee [LICENSIA (en Ingles)](LICENSE) para mas información.
+Este programa esta publicado con la licencia de MIT. Lee [LICENCIA (en Ingles)](LICENSE) para mas información.
