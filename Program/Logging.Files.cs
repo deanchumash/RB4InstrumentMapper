@@ -135,8 +135,6 @@ namespace RB4InstrumentMapper
             // Create log file if it hasn't been made yet
             CreateMainLog();
 
-            Debug.WriteLine(text);
-
             lock (mainLock)
             {
                 mainLog?.WriteLine(GetMessageHeader(text));
@@ -150,11 +148,6 @@ namespace RB4InstrumentMapper
         {
             // Create log file if it hasn't been made yet
             CreateMainLog();
-
-            // Prevent writing an empty line if context is not provided
-            if (context != null)
-                Debug.WriteLine(context);
-            Debug.WriteLine(ex.ToString());
 
             lock (mainLock)
             {
