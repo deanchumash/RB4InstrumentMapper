@@ -166,9 +166,6 @@ namespace RB4InstrumentMapper.Parsing
 
             if ((currentStatus & GameInputDeviceStatus.Connected) != 0)
             {
-                if (!MapperFactory.IsSupportedByHardwareIds(info.vendorId, info.productId))
-                    return;
-
                 var permaDevice = device.ToComPtr();
                 var backendDevice = new GameInputBackendDevice(gameInput, permaDevice);
                 backendDevice.EnableInputs(inputsEnabled);

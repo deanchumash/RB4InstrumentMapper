@@ -104,16 +104,6 @@ namespace RB4InstrumentMapper.Parsing
             return func;
         }
 
-        public static bool IsSupportedByHardwareIds(ushort vendorId, ushort productId)
-        {
-            return hardwareIdLookup.ContainsKey((vendorId, productId));
-        }
-
-        public static bool IsSupportedByInterfaceIds(HashSet<Guid> interfaceGuids)
-        {
-            return GetByInterfaceIds(interfaceGuids) != null;
-        }
-
         public static DeviceMapper GetByHardwareIds(IBackendClient client)
         {
             if (!hardwareIdLookup.TryGetValue((client.VendorId, client.ProductId), out var func))

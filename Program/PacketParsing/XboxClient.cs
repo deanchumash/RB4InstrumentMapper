@@ -211,20 +211,11 @@ namespace RB4InstrumentMapper.Parsing
 
             Descriptor = descriptor;
 
-            bool supported;
             if (Parent.InputsEnabled)
             {
                 deviceMapper?.Dispose();
                 deviceMapper = MapperFactory.GetByInterfaceIds(this, Descriptor.InterfaceGuids);
-                supported = deviceMapper != null;
             }
-            else
-            {
-                supported = MapperFactory.IsSupportedByInterfaceIds(Descriptor.InterfaceGuids);
-            }
-
-            if (!supported)
-                return XboxResult.UnsupportedDevice;
 
             // Send final set of initialization messages
             Debug.Assert(Descriptor.OutputCommands.Contains(XboxConfiguration.CommandId));
