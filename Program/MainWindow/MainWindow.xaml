@@ -27,7 +27,7 @@
         </GroupBox>
         <GroupBox Header="Capture" Height="104" Margin="0,130,0,0" VerticalAlignment="Top">
             <Grid Margin="10,10,10,10">
-                <Label x:Name="controllerDeviceTypeLabel" Content="Controller Emulation Mode" Height="30" Width="160" Margin="-5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Label x:Name="controllerDeviceTypeLabel" Content="Controller Emulation Mode" Height="30" Width="170" Margin="-5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <ComboBox x:Name="controllerDeviceTypeCombo" Height="30" Width="160" VerticalAlignment="Bottom" HorizontalAlignment="Left" SelectionChanged="controllerDeviceTypeCombo_SelectionChanged">
                     <ComboBoxItem x:Name="vjoyDeviceTypeOption" Content="vJoy" IsEnabled="False"/>
                     <ComboBoxItem x:Name="vigemDeviceTypeOption" Content="ViGEmBus" IsEnabled="False"/>
