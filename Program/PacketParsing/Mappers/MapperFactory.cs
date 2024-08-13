@@ -121,7 +121,7 @@ namespace RB4InstrumentMapper.Parsing
                 // Verbose since hardware ID lookup is meant for GameInput,
                 // and we don't want to warn unnecessarily for devices that don't need to be handled
                 Logging.WriteLineVerbose($"Device with hardware IDs {client.VendorId:X4}{client.ProductId:X4} is not recognized! Device will not be mapped.");
-                return null;
+                return new DummyMapper(client);
             }
 
             try
@@ -139,7 +139,7 @@ namespace RB4InstrumentMapper.Parsing
         {
             var func = GetByInterfaceIds(interfaceGuids);
             if (func == null)
-                return null;
+                return new DummyMapper(client);
 
             try
             {
