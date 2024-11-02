@@ -125,6 +125,12 @@ namespace RB4InstrumentMapper
             GameInputBackend.DeviceCountChanged += GameInputDeviceCountChanged;
             GameInputBackend.Initialize();
             SetGameInputInitialized(GameInputBackend.Initialized);
+
+            // Start capture if option set
+            if (Settings.Default.startCapture == 1)
+            {
+                StartCapture();
+            }
         }
 
         /// <summary>

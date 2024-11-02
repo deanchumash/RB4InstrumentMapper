@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,43 +15,109 @@ namespace RB4InstrumentMapper
         private const string WinUsbOption = "--winusb";
         private const string RevertOption = "--revert";
         private const string ReplayOption = "--replay";
+        private const string MappingModeOption = "--mappingMode";
+        private const string StartCaptureOption = "--startCapture";
+
+        private enum ControllerType
+        {
+            None = -1,
+            vJoy = 0,
+            ViGEmBus = 1,
+            RPCS3 = 2
+        }
 
         [STAThread]
         public static int Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
+            int exitCode = 0;
+            bool run = true;
+            Console.WriteLine(args);
+            for (int i = 0; i < args.Length; i++)
+            {
+                string type = args[i];
+                string path;
+
+                switch (type)
+                {
+                    case MappingModeOption:
+                        if (i + 1 >= args.Length)
+                        {
+                            Console.WriteLine("Not enough arguments!");
+                            exitCode = 1;
+                            run = false;
+                            break;
+                        }
+                        i++;
+                        if (Array.Exists(Enum.GetNames(typeof(ControllerType)), mappingMode => mappingMode == args[i]))
+                        {
+                            Settings.Default.controllerDeviceType = (int)Enum.Parse(typeof(ControllerType), args[i]);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Mapping mode {type} is invalid");
+                            exitCode = 1;
+                            run = false;
+                        }
+                        break;
+                    case StartCaptureOption:
+                        Settings.Default.startCapture = 1;
+                        break;
+                    case WinUsbOption:
+                        if (i + 1 >= args.Length)
+                        {
+                            Console.WriteLine("Not enough arguments!");
+                            exitCode = 1;
+                            run = false;
+                            break;
+                        }
+                        i++;
+                        path = args[i];
+                        exitCode = WinUsbBackend.SwitchDeviceToWinUSB(path) ? 0 : -1;
+                        run = false;
+                        break;
+                    case RevertOption:
+                        if (i + 1 >= args.Length)
+                        {
+                            Console.WriteLine("Not enough arguments!");
+                            exitCode = 1;
+                            run = false;
+                            break;
+                        }
+                        i++;
+                        path = args[i];
+                        exitCode = WinUsbBackend.RevertDevice(path) ? 0 : -1;
+                        run = false;
+                        break;
+                    case ReplayOption:
+                        if (i + 1 >= args.Length)
+                        {
+                            Console.WriteLine("Not enough arguments!");
+                            exitCode = 1;
+                            run = false;
+                            break;
+                        }
+                        i++;
+                        path = args[i];
+                        exitCode = ReplayBackend.ReplayLog(path) ? 0 : -1;
+                        run = false;
+                        break;
+                    default:
+                        Console.WriteLine($"Invalid option '{type}'!");
+                        exitCode = -1;
+                        run = false;
+                        break;
+                }
+            }
+
             // Regular app startup
-            if (args.Length == 0)
+            if (run)
             {
                 App.Main();
                 return 0;
             }
-            else if (args.Length < 2)
-            {
-                Console.WriteLine("Not enough arguments!");
-                return -1;
-            }
 
-            string type = args[0];
-            string path = args[1];
-            int exitCode;
-            switch (type)
-            {
-                case WinUsbOption:
-                    exitCode = WinUsbBackend.SwitchDeviceToWinUSB(path) ? 0 : -1;
-                    break;
-                case RevertOption:
-                    exitCode = WinUsbBackend.RevertDevice(path) ? 0 : -1;
-                    break;
-                case ReplayOption:
-                    exitCode = ReplayBackend.ReplayLog(path) ? 0 : -1;
-                    break;
-                default:
-                    Console.WriteLine($"Invalid option '{type}'!");
-                    exitCode = -1;
-                    break;
-            }
 
             Logging.CloseAll();
             return exitCode;
